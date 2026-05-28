@@ -13,12 +13,12 @@ const allReviews = await getCollection('reviews');
     
     <div class="reviews-grid">
       {allReviews.map(review => (
-        <a href={`/reviews/${review.slug || review.id}`} class="review-card-link">
+        <a href={`/reviews/${review.id || review.id}`} class="review-card-link">
           <article class="review-card">
             <h2>{review.data.title}</h2>
             <div class="meta-row">
               <span class="category-tag">{review.data.category}</span>
-              <span class="rating-stars">{"★".repeat(review.data.rating)}</span>
+             <span class="rating-stars">{"★".repeat(parseInt(review.data.priceRating))}</span>
             </div>
             <p class="description">{review.data.description}</p>
           </article>

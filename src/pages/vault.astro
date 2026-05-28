@@ -1,0 +1,171 @@
+---
+import VaultLayout from '../layouts/VaultLayout.astro';
+---
+
+<VaultLayout title='Sovereign Secret Vault'>
+  <style is:global>
+    /* Premium Terminal Output Styling */
+    .output-container {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(16, 185, 129, 0.3) rgba(15, 23, 42, 0.5);
+    }
+    
+    .output-container::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .output-container::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 0.5rem;
+    }
+    
+    .output-container::-webkit-scrollbar-thumb {
+      background: rgba(16, 185, 129, 0.3);
+      border-radius: 0.5rem;
+    }
+    
+    .output-container::-webkit-scrollbar-thumb:hover {
+      background: rgba(16, 185, 129, 0.5);
+    }
+
+    /* Textarea custom scrollbar */
+    textarea {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(16, 185, 129, 0.2) rgba(15, 23, 42, 0.5);
+    }
+    
+    textarea::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    textarea::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.5);
+    }
+    
+    textarea::-webkit-scrollbar-thumb {
+      background: rgba(16, 185, 129, 0.2);
+      border-radius: 0.25rem;
+    }
+    
+    textarea::-webkit-scrollbar-thumb:hover {
+      background: rgba(16, 185, 129, 0.4);
+    }
+
+    /* Button ripple effect on click */
+    button {
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Output text animation */
+    .output-container:not(:empty) {
+      animation: fadeInContent 0.3s ease-out;
+    }
+
+    @keyframes fadeInContent {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+  </style>
+  <div class='max-w-4xl mx-auto space-y-6 mt-4'>
+    
+    <!-- System Diagnostics Panel -->
+    <div class='bg-slate-900 border border-emerald-500/30 p-6 rounded-xl shadow-2xl relative overflow-hidden'>
+      <div class='absolute top-0 left-0 w-1 h-full bg-emerald-500'></div>
+      <h2 class='text-xl font-mono font-bold text-emerald-400 mb-2'>System Diagnostics</h2>
+      <p class='text-sm text-slate-400 font-mono'>
+        Core engine online. Ready to normalize targeted text strings and map structures.
+      </p>
+    </div>
+
+    <!-- UI Interaction Module Workspace -->
+    <div class='bg-slate-900 border border-slate-800 p-6 rounded-xl shadow-xl'>
+      <h3 class='text-md font-mono font-semibold text-slate-300 mb-4'>
+        🧬 Text Normalization Module
+      </h3>
+      
+      <div class='space-y-4'>
+        <!-- Input Section -->
+        <div>
+          <label class='block text-xs font-mono text-emerald-500/80 uppercase tracking-widest font-semibold mb-3'>
+            Raw Input Text / Key-Phrases
+          </label>
+          <textarea 
+            id='input-textarea'
+            rows='6' 
+            class='w-full bg-slate-950 border border-slate-800 rounded-lg p-4 font-mono text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-emerald-500 focus:shadow-lg focus:shadow-emerald-500/20 transition-all duration-200'
+            placeholder='Enter raw text string lines to normalize...'
+          ></textarea>
+        </div>
+
+        <!-- Control Panel -->
+        <div class='flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-end pt-2'>
+          <button 
+            id='clear-terminal' 
+            class='bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-slate-100 px-4 py-2.5 rounded-lg font-mono text-xs font-semibold uppercase tracking-wider transition-all duration-200 border border-slate-700 hover:border-slate-600 active:scale-95'
+          >
+            Clear Terminal
+          </button>
+          <button 
+            id='normalize-button' 
+            class='bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-slate-950 font-bold px-6 py-2.5 rounded-lg font-mono text-xs uppercase tracking-wider transition-all duration-200 shadow-lg shadow-emerald-900/30 hover:shadow-emerald-500/50 border border-emerald-500/50 hover:border-emerald-400 active:scale-95'
+          >
+            Execute Normalization
+          </button>
+        </div>
+
+        <!-- Output Terminal Container -->
+        <div id='output-results' class='output-container mt-6 p-5 rounded-lg border border-emerald-500/30 bg-slate-950 text-slate-200 font-mono text-sm min-h-[8rem] max-h-[16rem] overflow-y-auto shadow-inner ring-1 ring-slate-800/50'>
+          <!-- Phase 2 engine output goes here -->
+        </div>
+      </div>
+    </div>
+
+  </div>
+</VaultLayout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const inputTextArea = document.querySelector('textarea');
+    const normalizeButton = document.querySelector('#normalize-button');
+    const clearTerminalButton = document.querySelector('#clear-terminal');
+    const outputContainer = document.querySelector('#output-results') || document.querySelector('.output-container');
+
+    if (!normalizeButton || !clearTerminalButton || !inputTextArea || !outputContainer) {
+      console.warn("Phase 2 Warning: Missing required UI DOM elements in layout structure.");
+      return;
+    }
+
+    clearTerminalButton.addEventListener('click', () => {
+      inputTextArea.value = '';
+      outputContainer.textContent = '';
+    });
+
+    normalizeButton.addEventListener('click', () => {
+      let text = inputTextArea.value;
+
+      // Rule 1: Alif Normalization (Unify 'أ', 'إ', and 'آ' into plain 'ا')
+      text = text.replace(/[أإآ]/g, 'ا');
+
+      // Rule 2: Ya Normalization (Convert dotless 'ى' / Alif Maqsura into standard 'ي')
+      text = text.replace(/ى/g, 'ي');
+
+      // Rule 3: Ta Marbuta Normalization (Convert 'ة' into 'ه')
+      text = text.replace(/ة/g, 'ه');
+
+      // Rule 4: Diacritic Stripping (Strip out all Arabic Tashkeel/Harakat)
+      text = text.replace(/[\u064B-\u0652]/g, '');
+
+      // Rule 5: Whitespace Trimming (Clean up double spaces and redundant line breaks)
+      text = text.replace(/ +/g, ' ');
+      text = text.replace(/\n\s*\n+/g, '\n');
+      text = text.trim();
+
+      outputContainer.textContent = text;
+    });
+  });
+</script>
