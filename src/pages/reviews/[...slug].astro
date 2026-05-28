@@ -1,0 +1,72 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import { getLangFromUrl, useTranslations } from '../../utils/i18n';
+
+export async function getStaticPaths() {
+  const dataEntries = await getCollection('reviews');
+  return dataEntries.map((entry: any) => ({
+    params: { slug: entry.slug || entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props as { entry: any };
+const { Content } = await entry.render();
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<Layout title={entry.data.title || "MahuTop Display"}>
+  <article class="max-w-4xl mx-auto bg-neutral-950/40 border border-amber-500/10 rounded-2xl p-6 md:p-12 backdrop-blur-md relative overflow-hidden shadow-2xl">
+    <div class="absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl from-amber-500/5 to-transparent rounded-bl-full pointer-events-none"></div>
+    
+    <div class="flex flex-col lg:flex-row gap-10 items-start mb-10">
+      <div class="w-full lg:w-1/3 bg-black/50 border border-amber-500/5 aspect-square rounded-xl flex items-center justify-center relative">
+        <div class="text-amber-500/20 font-['Orbitron'] text-7xl font-bold">M</div>
+      </div>
+      
+      <div class="flex-grow w-full">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="text-[10px] font-['Orbitron'] text-amber-400 tracking-[0.2em] uppercase border border-amber-500/20 px-2.5 py-1 rounded bg-amber-950/20">
+            {entry.data.category || entry.data.collection || "Hardware"}
+          </span>
+          <span class="text-xs font-['Orbitron'] text-neutral-500 tracking-wider">
+            {entry.data.priceRating || entry.data.rating || "$$$"}
+          </span>
+        </div>
+        
+        <h1 class="font-['Cinzel'] text-3xl md:text-5xl text-amber-400 font-black tracking-wide mb-3">{entry.data.title || "Asset"}</h1>
+        <p class="text-amber-200/40 font-['Orbitron'] text-[11px] tracking-widest mb-6 uppercase">Vibe Parameters // {entry.data.productVibe || "Immersion Circuit"}</p>
+        <p class="text-slate-400 font-['Inter'] text-sm leading-relaxed mb-8 max-w-2xl">{entry.data.description || ""}</p>
+        
+        <a 
+          href={entry.data.affiliateLink || "#"} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          onclick="window.playCyberSound?.('cart')"
+          class="inline-block font-['Orbitron'] text-center font-bold text-black bg-gradient-to-r from-amber-400 via-yellow-200 to-amber-500 hover:from-amber-400 hover:to-amber-600 px-10 py-4 rounded-xl text-xs tracking-[0.2em] uppercase transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] shadow-xl shadow-amber-950/40 w-full sm:w-auto"
+        >
+          {t('product.deal')}
+        </a>
+      </div>
+    </div>
+
+    {entry.data.techSpecs && entry.data.techSpecs.length > 0 && (
+      <div class="border-t border-amber-500/10 pt-8 mt-8">
+        <h3 class="font-['Orbitron'] text-xs font-bold text-amber-400 tracking-[0.15em] uppercase mb-4">{t('product.specs')}</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {entry.data.techSpecs.map((spec: string) => (
+            <div class="bg-black/40 border border-neutral-900/60 px-4 py-3.5 rounded-lg text-xs text-slate-400 font-['Orbitron'] tracking-wide flex items-center">
+              <span class="text-amber-500/60 mr-3">❖</span> {spec}
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+
+    <div class="prose prose-invert max-w-none border-t border-amber-500/10 pt-10 mt-10 text-slate-300 text-sm leading-relaxed">
+      <Content />
+    </div>
+  </article>
+</Layout>

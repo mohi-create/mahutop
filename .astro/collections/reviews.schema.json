@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "affiliateLink": {
+      "type": "string",
+      "format": "uri"
+    },
+    "priceRating": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    },
+    "productVibe": {
+      "type": "string"
+    },
+    "techSpecs": {
+      "default": [],
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "$schema": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "description",
+    "affiliateLink",
+    "priceRating",
+    "category",
+    "productVibe"
+  ]
+}

@@ -1,0 +1,1 @@
+If a command or file change fails, do not attempt to repeat the exact same fix or re-run the exact same command. Stop immediately, explain the error, and wait for my direct instruction.

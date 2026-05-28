@@ -1,0 +1,138 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="HARDWARE//HUB">
+  <main class="hero-container">
+    <div class="glitch-wrapper">
+      <h1 class="hero-title" data-text="HARDWARE//HUB">HARDWARE//HUB</h1>
+    </div>
+    
+    <p class="hero-subtitle">
+      A curated index of wearable electronics, intricate PCB design, and bespoke maker hardware.
+    </p>
+
+    <div class="action-row">
+      <a href="/reviews" class="btn-primary">
+        <span>Explore Reviews</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+      </a>
+    </div>
+
+    <div class="status-bar">
+      <div class="status-item">
+        <span class="indicator green"></span>
+        <span class="status-text">CORE.SYS: ACTIVE</span>
+      </div>
+      <div class="status-item">
+        <span class="indicator gold"></span>
+        <span class="status-text">REVIEWS.DB: 2 ENTRIES LOADED</span>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .hero-container {
+    max-width: 800px;
+    margin: auto;
+    padding: 8rem 2rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 70vh;
+  }
+
+  .hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #fff;
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+
+  .hero-subtitle {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: rgba(255, 255, 255, 0.5);
+    max-width: 540px;
+    margin-bottom: 3rem;
+    font-weight: 300;
+    letter-spacing: 0.02em;
+  }
+
+  /* Premium Hover Button */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: #050505;
+    background: #fff;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .btn-primary svg {
+    transition: transform 0.3s ease;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    background: #d4af37; /* Shifts into ENIG Gold on hover */
+    box-shadow: 0 10px 30px rgba(212, 175, 55, 0.2);
+  }
+
+  .btn-primary:hover svg {
+    transform: translateX(4px); /* Arrow subtly glides right */
+  }
+
+  /* Status Bar details */
+  .status-bar {
+    margin-top: 6rem;
+    display: flex;
+    gap: 3rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.03);
+    padding-top: 2rem;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .status-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .indicator {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+
+  .indicator.green {
+    background: #00ff66;
+    box-shadow: 0 0 8px #00ff66;
+  }
+
+  .indicator.gold {
+    background: #d4af37;
+    box-shadow: 0 0 8px #d4af37;
+  }
+
+  .status-text {
+    font-size: 0.75rem;
+    font-family: monospace;
+    opacity: 0.3;
+    letter-spacing: 0.1em;
+  }
+</style>
