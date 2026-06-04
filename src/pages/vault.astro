@@ -236,18 +236,9 @@ import VaultLayout from '../layouts/VaultLayout.astro';
         var text = outputContainer ? outputContainer.textContent || '' : '';
         if (!text) return;
         try {
-          if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(text);
-          } else {
-            var ta = document.createElement('textarea');
-            ta.value = text;
-            document.body.appendChild(ta);
-            ta.select();
-            document.execCommand('copy');
-            document.body.removeChild(ta);
-          }
-          copyButton.textContent = 'Copied';
-          setTimeout(function () { copyButton.textContent = 'Copy'; }, 1200);
+          navigator.clipboard.writeText(outputContainer.textContent || '');
+          copyButton.textContent = '✓ Copied!';
+          setTimeout(function () { copyButton.textContent = 'Copy'; }, 2000);
         } catch (e) {
           console.error('Copy failed', e);
         }
