@@ -413,6 +413,12 @@ import VaultLayout from '../layouts/VaultLayout.astro';
         anchor.click();
         document.body.removeChild(anchor);
         URL.revokeObjectURL(url);
+        
+        var originalText = downloadButton.textContent;
+        downloadButton.textContent = '✓ Saved!';
+        setTimeout(function () {
+          downloadButton.textContent = originalText;
+        }, 1500);
       });
     }
 
