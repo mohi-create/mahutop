@@ -317,6 +317,21 @@ import VaultLayout from '../layouts/VaultLayout.astro';
 <script>
   // @ts-nocheck
 
+  // Immediate vault gate: check sessionStorage and prompt on first load
+  if (sessionStorage.getItem('vault_secure_unlocked') !== 'true') {
+    document.addEventListener('DOMContentLoaded', () => {
+      const userKey = prompt("ENTER CRITICAL VAULT ACCESS PASSPHRASE:");
+      // Replace 'YOUR_SUPERIOR_PASSWORD' with your preferred master key
+      if (userKey === "YOUR_SUPERIOR_PASSWORD") {
+        sessionStorage.setItem('vault_secure_unlocked', 'true');
+        alert("ACCESS GRANTED // SOVEREIGN ENGINES ONLINE");
+      } else {
+        alert("ACCESS DENIED // SECURITY VIOLATION");
+        window.location.href = "/";
+      }
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     /** @type {HTMLTextAreaElement | null} */
     const inputTextArea = document.querySelector('#input-textarea');
