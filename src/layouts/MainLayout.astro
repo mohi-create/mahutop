@@ -8,6 +8,7 @@ const translations = {
     vault: "SOVEREIGN VAULT",
     bazaar: "GRAND BAZAAR",
     logs: "SYSTEM LOGS // REVIEWS_DATABASE",
+    "SYSTEM LOGS // REVIEWS_DATABASE": "SYSTEM LOGS // REVIEWS_DATABASE",
     vaultPrompt: "ENTER CRITICAL ACCESS KEY:",
     reviewsSub: "Encrypted review logs, ready for audit and deeper analysis."
   },
@@ -17,6 +18,7 @@ const translations = {
     vault: "خزنة السيادة",
     bazaar: "البازار الكبير",
     logs: "سجلات النظام // قاعدة بيانات المراجعات",
+    "SYSTEM LOGS // REVIEWS_DATABASE": "سجلات النظام // قاعدة بيانات المراجعات",
     vaultPrompt: "أدخل مفتاح الوصول الحرج:",
     reviewsSub: "سجلات المراجعة المشفرة، جاهزة للتدقيق والتحليل العميق."
   }
@@ -80,6 +82,7 @@ const routeMap = {
           vault: "SOVEREIGN VAULT",
           bazaar: "GRAND BAZAAR",
           logs: "SYSTEM LOGS // REVIEWS_DATABASE",
+          "SYSTEM LOGS // REVIEWS_DATABASE": "SYSTEM LOGS // REVIEWS_DATABASE",
           reviewsSub: "Encrypted review logs, ready for audit and deeper analysis."
         },
         ar: {
@@ -88,6 +91,7 @@ const routeMap = {
           vault: "خزنة السيادة",
           bazaar: "البازار الكبير",
           logs: "سجلات النظام // قاعدة بيانات المراجعات",
+          "SYSTEM LOGS // REVIEWS_DATABASE": "سجلات النظام // قاعدة بيانات المراجعات",
           reviewsSub: "سجلات المراجعة المشفرة، جاهزة للتدقيق والتحليل العميق."
         }
       };
@@ -102,9 +106,13 @@ const routeMap = {
           const dynamicElements = document.querySelectorAll('[data-i18n-key], [data-key]');
           dynamicElements.forEach((el) => {
             const htmlEl = el as HTMLElement;
-            const key = htmlEl.dataset.i18nKey || htmlEl.dataset.key;
-            if (key && translations[lang] && translations[lang][key]) {
-              htmlEl.textContent = translations[lang][key];
+
+            // Normalize whitespaces, tabs, or rogue space characters from the page text
+            const rawKey = htmlEl.dataset.i18nKey || htmlEl.dataset.key || htmlEl.textContent || "";
+            const cleanKey = rawKey.trim().replace(/\s+/g, ' ');
+
+            if (translations[lang] && translations[lang][cleanKey]) {
+              htmlEl.textContent = translations[lang][cleanKey];
             }
           });
         }
