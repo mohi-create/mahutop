@@ -67,7 +67,6 @@ const routeMap = {
     </div>
 
     <script>
-      // Explicit Type Interface for the Translation Matrix
       interface TranslationDictionary {
         [key: string]: {
           [key: string]: string;
@@ -93,20 +92,17 @@ const routeMap = {
         }
       };
 
-      function applyTranslations(lang: 'en' | 'ar') {
-          // Safely switch document direction matrix
+      document.addEventListener('DOMContentLoaded', () => {
+        const langToggle = document.getElementById('lang-toggle') as HTMLSelectElement | null;
+
+        function applyTranslations(lang: 'en' | 'ar') {
           document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
           document.documentElement.lang = lang;
 
-          // Query everything that has either data-i18n-key or data-key attributes
           const dynamicElements = document.querySelectorAll('[data-i18n-key], [data-key]');
-
           dynamicElements.forEach((el) => {
             const htmlEl = el as HTMLElement;
-            
-            // Accept whichever key is defined on the element as a fallback
             const key = htmlEl.dataset.i18nKey || htmlEl.dataset.key;
-            
             if (key && translations[lang] && translations[lang][key]) {
               htmlEl.textContent = translations[lang][key];
             }
@@ -114,14 +110,13 @@ const routeMap = {
         }
 
         if (langToggle) {
-          langToggle.addEventListener('change', (e) => {
+          langToggle.addEventListener('change', (e: Event) => {
             const target = e.target as HTMLSelectElement;
             const selectedLang = target.value as 'en' | 'ar';
             localStorage.setItem('mahutop_lang', selectedLang);
             applyTranslations(selectedLang);
           });
 
-          // Restore session memory state safely
           const savedLang = (localStorage.getItem('mahutop_lang') || 'en') as 'en' | 'ar';
           langToggle.value = savedLang;
           applyTranslations(savedLang);
