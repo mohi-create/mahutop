@@ -1,4 +1,5 @@
 ---
+import Navbar from '../components/Navbar.astro';
 import VaultLayout from '../layouts/VaultLayout.astro';
 ---
 
@@ -8,6 +9,7 @@ import VaultLayout from '../layouts/VaultLayout.astro';
 </head>
 
 <VaultLayout title='Sovereign Secret Vault'>
+  <Navbar />
   <style is:global>
     /* Premium Terminal Output Styling */
     .output-container {
