@@ -2,27 +2,31 @@
 const { title } = Astro.props;
 ---
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="bg-black text-gray-100">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{title}</title>
+  <!-- Tailwind CDN to ensure all dark modes, grids, and emerald accents render everywhere -->
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <slot />
+<body class="bg-black text-gray-100 min-h-screen selection:bg-emerald-500 selection:text-black">
+  
+  <!-- Master Site Shell Context Layout -->
+  <div class="system-shell p-4 max-w-7xl mx-auto">
+    <slot />
+  </div>
 
   <script>
     interface TranslationDictionary {
-      [key: string]: {
-        [key: string]: string;
-      };
+      [key: string]: { [key: string]: string };
     }
 
     const translations: TranslationDictionary = {
       en: {
         brand: "MAHUTOP",
         home: "HOME_BASE",
-        vault: "SOVEREIGN VAULT",
+        vault: "SOVEREIGN // VAULT_CORE",
         bazaar: "GRAND BAZAAR",
         logs: "SYSTEM LOGS // REVIEWS_DATABASE",
         reviewsSub: "Encrypted review logs, ready for audit and deeper analysis."
@@ -30,7 +34,7 @@ const { title } = Astro.props;
       ar: {
         brand: "ماهوتوب",
         home: "الصفحة الرئيسية",
-        vault: "خزنة السيادة",
+        vault: "خزنة السيادة // النواة المسبقة",
         bazaar: "البازار الكبير",
         logs: "سجلات النظام // قاعدة بيانات المراجعات",
         reviewsSub: "سجلات المراجعة المشفرة، جاهزة للتدقيق والتحليل العميق."
