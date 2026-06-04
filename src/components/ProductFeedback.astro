@@ -1,0 +1,444 @@
+---
+interface Props {
+  productId: string;
+  lang?: 'en' | 'ar';
+}
+
+const { productId, lang = 'en' } = Astro.props;
+const direction = lang === 'ar' ? 'rtl' : 'ltr';
+const labels = lang === 'ar'
+  ? {
+      title: 'مراجعات المجتمع',
+      intro: 'شارك ملاحظاتك أو ردودك مع المجتمع عبر سجل تعليقات محلي آمن.',
+      commentLabel: 'تعليق',
+      commentPlaceholder: 'اكتب رأيك هنا...',
+      scoreLabel: 'تقييم',
+      submitText: 'أرسل المراجعة',
+      replyText: 'رد',
+      replyPlaceholder: 'أضف ردًا هنا...',
+      submitReplyText: 'أرسل الرد',
+      noComments: 'لا توجد تعليقات حتى الآن. كن أول من يشارك.',
+      scoreOptions: ['1 نجمة', '2 نجمتان', '3 نجوم', '4 نجوم', '5 نجوم'],
+      commentTimestamp: 'منذ',
+    }
+  : {
+      title: 'Community Feedback',
+      intro: 'Share your feedback and replies in a premium local review panel.',
+      commentLabel: 'Comment',
+      commentPlaceholder: 'Write your thoughts here...',
+      scoreLabel: 'Score',
+      submitText: 'Submit Review',
+      replyText: 'Reply',
+      replyPlaceholder: 'Add a reply...',
+      submitReplyText: 'Submit Reply',
+      noComments: 'No comments yet. Be the first to share.',
+      scoreOptions: ['1 star', '2 stars', '3 stars', '4 stars', '5 stars'],
+      commentTimestamp: 'ago',
+    };
+---
+
+<div class="product-feedback-shell" data-product-id={productId} dir={direction}>
+  <div class="feedback-card">
+    <div class="feedback-header">
+      <div>
+        <h2>{labels.title}</h2>
+        <p>{labels.intro}</p>
+      </div>
+    </div>
+
+    <form class="feedback-form" data-feedback-form>
+      <label class="field-label">
+        <span>{labels.commentLabel}</span>
+        <textarea name="comment" rows="4" placeholder={labels.commentPlaceholder} required></textarea>
+      </label>
+
+      <label class="field-label field-inline">
+        <span>{labels.scoreLabel}</span>
+        <select name="score" required>
+          <option value="5">{labels.scoreOptions[4]}</option>
+          <option value="4">{labels.scoreOptions[3]}</option>
+          <option value="3">{labels.scoreOptions[2]}</option>
+          <option value="2">{labels.scoreOptions[1]}</option>
+          <option value="1">{labels.scoreOptions[0]}</option>
+        </select>
+      </label>
+
+      <button type="submit" class="submit-btn">{labels.submitText}</button>
+    </form>
+
+    <div class="feedback-list" data-feedback-list>
+      <div class="feedback-empty">{labels.noComments}</div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const currentScript = document.currentScript;
+      if (!currentScript) return;
+
+      const root = currentScript.parentElement;
+      if (!root) return;
+
+      const productId = root.dataset.productId || 'global-feedback';
+      const STORAGE_KEY = `mahutop_feedback_${productId}`;
+      const form = root.querySelector<HTMLFormElement>('[data-feedback-form]');
+      const feedbackList = root.querySelector<HTMLDivElement>('[data-feedback-list]');
+      const emptyMessage = root.querySelector<HTMLDivElement>('.feedback-empty');
+      const labels = {
+        replyText: root.dir === 'rtl' ? 'رد' : 'Reply',
+        replyPlaceholder: root.dir === 'rtl' ? 'أضف ردًا هنا...' : 'Add a reply...',
+        submitReplyText: root.dir === 'rtl' ? 'أرسل الرد' : 'Submit Reply',
+        noComments: root.dir === 'rtl' ? 'لا توجد تعليقات حتى الآن. كن أول من يشارك.' : 'No comments yet. Be the first to share.',
+        commentTimestamp: root.dir === 'rtl' ? 'منذ' : 'ago',
+      };
+
+      type FeedbackReply = { id: string; text: string; timestamp: number };
+      type FeedbackComment = { id: string; text: string; score: number; timestamp: number; replies: FeedbackReply[] };
+      type FeedbackState = { comments: FeedbackComment[] };
+
+      if (!form || !feedbackList) {
+        return;
+      }
+
+      const buildState = (value: string | null): FeedbackState => {
+        try {
+          return value ? JSON.parse(value) : { comments: [] };
+        } catch (error) {
+          return { comments: [] };
+        }
+      };
+
+      const saveState = (state: FeedbackState) => {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      };
+
+      const loadState = (): FeedbackState => buildState(localStorage.getItem(STORAGE_KEY));
+
+      const formatTimestamp = (timestamp: number): string => {
+        const diff = Math.max(0, Math.floor((Date.now() - timestamp) / 1000));
+        if (diff < 60) return `${diff}s ${labels.commentTimestamp}`;
+        if (diff < 3600) return `${Math.floor(diff / 60)}m ${labels.commentTimestamp}`;
+        if (diff < 86400) return `${Math.floor(diff / 3600)}h ${labels.commentTimestamp}`;
+        return `${Math.floor(diff / 86400)}d ${labels.commentTimestamp}`;
+      };
+
+      const createReplyPanel = (commentId: string): HTMLDivElement => {
+        const panel = document.createElement('div');
+        panel.className = 'reply-panel';
+        panel.innerHTML = `
+          <textarea class="reply-input" rows="3" placeholder="${labels.replyPlaceholder}"></textarea>
+          <button class="reply-submit-btn" type="button">${labels.submitReplyText}</button>
+        `;
+
+        const replyInput = panel.querySelector<HTMLTextAreaElement>('.reply-input');
+        const replyButton = panel.querySelector<HTMLButtonElement>('.reply-submit-btn');
+
+        if (!replyInput || !replyButton) {
+          return panel;
+        }
+
+        replyButton.addEventListener('click', () => {
+          const text = replyInput.value.trim();
+          if (!text) return;
+          const state = loadState();
+          const comment = state.comments.find((item) => item.id === commentId);
+          if (!comment) return;
+          comment.replies.push({ id: crypto.randomUUID(), text, timestamp: Date.now() });
+          saveState(state);
+          renderComments();
+        });
+
+        return panel;
+      };
+
+      const renderComments = () => {
+        const state = loadState();
+        feedbackList.innerHTML = '';
+
+        if (!state.comments.length) {
+          if (emptyMessage) {
+            feedbackList.append(emptyMessage);
+          }
+          return;
+        }
+
+        state.comments
+          .slice()
+          .sort((a: FeedbackComment, b: FeedbackComment) => b.timestamp - a.timestamp)
+          .forEach((comment: FeedbackComment) => {
+            const card = document.createElement('article');
+            card.className = 'comment-card';
+            card.innerHTML = `
+              <div class="comment-body">
+                <div class="comment-score">${'★'.repeat(comment.score)}${'☆'.repeat(5 - comment.score)}</div>
+                <p class="comment-text"></p>
+                <footer class="comment-footer">
+                  <span class="comment-date">${formatTimestamp(comment.timestamp)}</span>
+                  <button class="reply-toggle-btn" type="button">${labels.replyText}</button>
+                </footer>
+              </div>
+            `;
+
+            const textParagraph = card.querySelector<HTMLParagraphElement>('.comment-text');
+            if (textParagraph) textParagraph.textContent = comment.text;
+
+            const repliesContainer = document.createElement('div');
+            repliesContainer.className = 'comment-replies';
+
+            comment.replies
+              .slice()
+              .sort((a: FeedbackReply, b: FeedbackReply) => a.timestamp - b.timestamp)
+              .forEach((reply: FeedbackReply) => {
+                const replyItem = document.createElement('div');
+                replyItem.className = 'reply-card';
+                replyItem.innerHTML = `
+                  <p>${reply.text}</p>
+                  <span class="reply-meta">${formatTimestamp(reply.timestamp)}</span>
+                `;
+                repliesContainer.append(replyItem);
+              });
+
+            const replyToggle = card.querySelector<HTMLButtonElement>('.reply-toggle-btn');
+            if (replyToggle) {
+              const replyPanel = createReplyPanel(comment.id);
+              replyPanel.style.display = 'none';
+              replyToggle.addEventListener('click', () => {
+                const isOpen = replyPanel.style.display === 'block';
+                replyPanel.style.display = isOpen ? 'none' : 'block';
+              });
+              card.append(replyPanel);
+            }
+
+            card.append(repliesContainer);
+            feedbackList.append(card);
+          });
+      };
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const formData = new FormData(form);
+        const commentText = String(formData.get('comment') || '').trim();
+        const scoreValue = Number(formData.get('score') || 5);
+        if (!commentText) return;
+
+        const state = loadState();
+        state.comments.push({
+          id: crypto.randomUUID(),
+          text: commentText,
+          score: Math.min(5, Math.max(1, scoreValue)),
+          timestamp: Date.now(),
+          replies: [],
+        });
+
+        saveState(state);
+        form.reset();
+        renderComments();
+      });
+
+      renderComments();
+    })();
+  </script>
+</div>
+
+<style>
+  .product-feedback-shell {
+    max-width: 100%;
+    min-width: 0;
+    margin: 0 auto;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+    color: #c9d1d9;
+  }
+
+  .feedback-card {
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(8, 12, 20, 0.98));
+    border: 1px solid rgba(203, 213, 225, 0.08);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+    border-radius: 24px;
+    padding: 1.75rem;
+    display: grid;
+    gap: 1.5rem;
+    backdrop-filter: blur(14px);
+  }
+
+  .feedback-header h2 {
+    margin: 0 0 0.35rem;
+    font-size: clamp(1.35rem, 2vw, 1.8rem);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #f8fafc;
+  }
+
+  .feedback-header p {
+    margin: 0;
+    color: #8b949e;
+    line-height: 1.75;
+    max-width: 45rem;
+  }
+
+  .feedback-form {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .field-label {
+    display: grid;
+    gap: 0.65rem;
+    font-size: 0.95rem;
+    color: #c9d1d9;
+  }
+
+  .field-inline {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .field-inline span {
+    min-width: 5rem;
+  }
+
+  textarea,
+  select {
+    width: 100%;
+    background: #0d1117;
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 16px;
+    color: #f8fafc;
+    padding: 1rem 1.1rem;
+    font-family: inherit;
+    font-size: 0.96rem;
+    transition: border-color 180ms ease, box-shadow 180ms ease;
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+
+  select {
+    max-width: 160px;
+    min-width: 140px;
+  }
+
+  textarea:focus,
+  select:focus {
+    outline: none;
+    border-color: #58a6ff;
+    box-shadow: 0 0 0 3px rgba(56, 139, 255, 0.14);
+  }
+
+  .submit-btn,
+  .reply-submit-btn,
+  .reply-toggle-btn {
+    background: rgba(56, 139, 255, 0.12);
+    border: 1px solid rgba(56, 139, 255, 0.24);
+    color: #c9d1d9;
+    padding: 0.88rem 1.25rem;
+    border-radius: 14px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+  }
+
+  .submit-btn:hover,
+  .reply-submit-btn:hover,
+  .reply-toggle-btn:hover {
+    background: rgba(56, 139, 255, 0.24);
+    transform: translateY(-1px);
+  }
+
+  .feedback-list {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .feedback-empty {
+    color: #8b949e;
+    padding: 1.25rem 1.5rem;
+    border: 1px dashed rgba(148, 163, 184, 0.3);
+    border-radius: 18px;
+    background: rgba(15, 23, 42, 0.72);
+    text-align: center;
+  }
+
+  .comment-card {
+    background: rgba(12, 17, 23, 0.88);
+    border: 1px solid rgba(148, 163, 184, 0.08);
+    border-radius: 22px;
+    padding: 1.35rem;
+    display: grid;
+    gap: 1rem;
+  }
+
+  .comment-body {
+    display: grid;
+    gap: 0.95rem;
+  }
+
+  .comment-score {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    color: #f5c518;
+    font-size: 0.98rem;
+    letter-spacing: 0.05em;
+  }
+
+  .comment-text {
+    margin: 0;
+    color: #e2e8f0;
+    line-height: 1.8;
+    white-space: pre-wrap;
+  }
+
+  .comment-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+    color: #8b949e;
+    font-size: 0.88rem;
+  }
+
+  .reply-panel {
+    display: grid;
+    gap: 0.75rem;
+    padding-top: 0.5rem;
+  }
+
+  .comment-replies {
+    display: grid;
+    gap: 0.75rem;
+    padding-top: 0.5rem;
+  }
+
+  .reply-card {
+    background: rgba(22, 28, 39, 0.95);
+    border: 1px solid rgba(148, 163, 184, 0.08);
+    border-radius: 18px;
+    padding: 0.95rem 1rem;
+  }
+
+  .reply-card p {
+    margin: 0 0 0.45rem;
+    color: #cbd5e1;
+    line-height: 1.75;
+  }
+
+  .reply-meta {
+    display: inline-block;
+    color: #8b949e;
+    font-size: 0.82rem;
+  }
+
+  @media (max-width: 700px) {
+    .field-inline {
+      grid-template-columns: 1fr;
+    }
+
+    .submit-btn {
+      width: 100%;
+    }
+  }
+</style>

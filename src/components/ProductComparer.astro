@@ -1,0 +1,777 @@
+---
+interface ProductSpec {
+  label: string;
+  value: string;
+}
+
+interface ComparisonProduct {
+  id: string;
+  name: string;
+  category: string;
+  priceOld?: string | number;
+  priceNew: string | number;
+  specs?: ProductSpec[];
+  affiliateLink: string;
+  image?: string;
+}
+
+interface Props {
+  products: ComparisonProduct[];
+  maxComparisons?: number;
+}
+
+const { products = [], maxComparisons = 3 } = Astro.props;
+
+const generateProductId = (product: ComparisonProduct, index: number): string => {
+  return product.id || `product-${index}`;
+};
+---
+
+<div class="product-comparer-container">
+  <!-- Product Cards with Compare Checkboxes -->
+  <div class="products-grid">
+    {products.map((product, index) => {
+      const productId = generateProductId(product, index);
+      return (
+        <div class="product-card" data-product-id={productId}>
+          {product.image && (
+            <div class="product-image">
+              <img src={product.image} alt={product.name} />
+            </div>
+          )}
+          
+          <div class="product-info">
+            <span class="product-category">{product.category}</span>
+            <h3 class="product-name">{product.name}</h3>
+            
+            <div class="price-section">
+              {product.priceOld && (
+                <span class="price-old">{product.priceOld}</span>
+              )}
+              <span class="price-new">{product.priceNew}</span>
+            </div>
+
+            {product.specs && product.specs.length > 0 && (
+              <div class="specs-preview">
+                {product.specs.slice(0, 2).map((spec) => (
+                  <div class="spec-item">
+                    <span class="spec-label">{spec.label}:</span>
+                    <span class="spec-value">{spec.value}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div class="card-actions">
+            <a 
+              href={product.affiliateLink}
+              class="btn-purchase"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Buy Now
+            </a>
+            <button 
+              class="btn-compare"
+              data-compare-id={productId}
+              aria-label={`Compare ${product.name}`}
+            >
+              <span class="compare-icon">⊕</span>
+              <span class="compare-text">Compare</span>
+            </button>
+          </div>
+        </div>
+      );
+    })}
+  </div>
+
+  <!-- Comparison Drawer Panel -->
+  <div class="comparison-drawer" id="comparisonDrawer">
+    <div class="drawer-header">
+      <h2 class="drawer-title">Product Comparison</h2>
+      <button class="btn-close" id="closeComparison" aria-label="Close comparison">
+        ✕
+      </button>
+    </div>
+
+    <div class="comparison-table-wrapper">
+      <div class="comparison-table" id="comparisonTable">
+        <!-- Dynamically populated by script -->
+      </div>
+    </div>
+
+    <div class="drawer-footer">
+      <button class="btn-clear-all" id="clearAllComparisons">
+        Clear All Selections
+      </button>
+    </div>
+  </div>
+
+  <!-- Backdrop -->
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+</div>
+
+<script define:vars={{ maxComparisons, products }}>
+  (() => {
+    const STORAGE_KEY = 'product_comparisons';
+    const MAX_COMPARISONS = maxComparisons || 3;
+    const PRODUCTS_DATA = products || [];
+
+    // DOM Elements
+    const drawer = document.getElementById('comparisonDrawer');
+    const backdrop = document.getElementById('drawerBackdrop');
+    const comparisonTable = document.getElementById('comparisonTable');
+    const closeBtn = document.getElementById('closeComparison');
+    const clearAllBtn = document.getElementById('clearAllComparisons');
+    const compareButtons = document.querySelectorAll('.btn-compare');
+
+    // Initialize
+    const init = () => {
+      loadComparisons();
+      attachEventListeners();
+      updateDrawerState();
+    };
+
+    // Get comparisons from localStorage
+    const loadComparisons = () => {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      return stored ? JSON.parse(stored) : [];
+    };
+
+    // Save comparisons to localStorage
+    const saveComparisons = (comparisons) => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(comparisons));
+    };
+
+    // Toggle product comparison
+    const toggleComparison = (productId) => {
+      const comparisons = loadComparisons();
+      const index = comparisons.indexOf(productId);
+
+      if (index > -1) {
+        // Remove if already selected
+        comparisons.splice(index, 1);
+      } else {
+        // Add if under max limit
+        if (comparisons.length < MAX_COMPARISONS) {
+          comparisons.push(productId);
+        } else {
+          alert(`You can compare up to ${MAX_COMPARISONS} products at a time.`);
+          return;
+        }
+      }
+
+      saveComparisons(comparisons);
+      updateUI();
+      updateDrawerState();
+    };
+
+    // Update UI state for buttons
+    const updateUI = () => {
+      const comparisons = loadComparisons();
+      
+      compareButtons.forEach((btn) => {
+        const productId = btn.dataset.compareId;
+        const isSelected = comparisons.includes(productId);
+        
+        if (isSelected) {
+          btn.classList.add('active');
+          btn.setAttribute('aria-pressed', 'true');
+        } else {
+          btn.classList.remove('active');
+          btn.setAttribute('aria-pressed', 'false');
+        }
+      });
+    };
+
+    // Render comparison table
+    const renderComparisonTable = () => {
+      const comparisons = loadComparisons();
+      
+      if (comparisons.length < 2) {
+        comparisonTable.innerHTML = '';
+        return;
+      }
+
+      const selectedProducts = comparisons
+        .map((id) => PRODUCTS_DATA.find((p) => p.id === id || `product-${PRODUCTS_DATA.indexOf(p)}` === id))
+        .filter(Boolean);
+
+      if (selectedProducts.length === 0) {
+        comparisonTable.innerHTML = '';
+        return;
+      }
+
+      let tableHTML = `
+        <div class="comparison-row header-row">
+          <div class="comparison-col col-label"></div>
+      `;
+
+      selectedProducts.forEach((product) => {
+        tableHTML += `<div class="comparison-col col-product">${product.name}</div>`;
+      });
+
+      tableHTML += `</div>`;
+
+      // Product Name Row
+      tableHTML += `
+        <div class="comparison-row">
+          <div class="comparison-col col-label">Product Name</div>
+      `;
+      selectedProducts.forEach((product) => {
+        tableHTML += `<div class="comparison-col">${product.name}</div>`;
+      });
+      tableHTML += `</div>`;
+
+      // Category Row
+      tableHTML += `
+        <div class="comparison-row">
+          <div class="comparison-col col-label">Category</div>
+      `;
+      selectedProducts.forEach((product) => {
+        tableHTML += `<div class="comparison-col">${product.category}</div>`;
+      });
+      tableHTML += `</div>`;
+
+      // Price Comparison Row (Old vs New)
+      tableHTML += `
+        <div class="comparison-row">
+          <div class="comparison-col col-label">Price</div>
+      `;
+      selectedProducts.forEach((product) => {
+        let priceHTML = '';
+        if (product.priceOld) {
+          priceHTML += `<span class="price-old">${product.priceOld}</span>`;
+        }
+        priceHTML += `<span class="price-new">${product.priceNew}</span>`;
+        tableHTML += `<div class="comparison-col price-col">${priceHTML}</div>`;
+      });
+      tableHTML += `</div>`;
+
+      // Specifications Rows
+      const allSpecs = selectedProducts.reduce((acc, product) => {
+        if (product.specs) {
+          product.specs.forEach((spec) => {
+            if (!acc.find((s) => s.label === spec.label)) {
+              acc.push(spec);
+            }
+          });
+        }
+        return acc;
+      }, []);
+
+      allSpecs.forEach((spec) => {
+        tableHTML += `
+          <div class="comparison-row">
+            <div class="comparison-col col-label">${spec.label}</div>
+        `;
+        selectedProducts.forEach((product) => {
+          const productSpec = product.specs?.find((s) => s.label === spec.label);
+          tableHTML += `<div class="comparison-col">${productSpec ? productSpec.value : '—'}</div>`;
+        });
+        tableHTML += `</div>`;
+      });
+
+      // CTA Buttons Row
+      tableHTML += `
+        <div class="comparison-row cta-row">
+          <div class="comparison-col col-label">Action</div>
+      `;
+      selectedProducts.forEach((product) => {
+        tableHTML += `
+          <div class="comparison-col">
+            <a href="${product.affiliateLink}" target="_blank" rel="noopener noreferrer" class="btn-comparison-cta">
+              View Product
+            </a>
+          </div>
+        `;
+      });
+      tableHTML += `</div>`;
+
+      comparisonTable.innerHTML = tableHTML;
+    };
+
+    // Update drawer visibility state
+    const updateDrawerState = () => {
+      const comparisons = loadComparisons();
+      const isVisible = comparisons.length >= 2;
+
+      if (isVisible) {
+        drawer.classList.add('active');
+        backdrop.classList.add('active');
+        renderComparisonTable();
+      } else {
+        drawer.classList.remove('active');
+        backdrop.classList.remove('active');
+      }
+    };
+
+    // Close drawer
+    const closeDrawer = () => {
+      const comparisons = loadComparisons();
+      saveComparisons([]);
+      updateUI();
+      updateDrawerState();
+    };
+
+    // Attach event listeners
+    const attachEventListeners = () => {
+      compareButtons.forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const productId = btn.dataset.compareId;
+          toggleComparison(productId);
+        });
+      });
+
+      closeBtn?.addEventListener('click', closeDrawer);
+      backdrop?.addEventListener('click', closeDrawer);
+      clearAllBtn?.addEventListener('click', closeDrawer);
+
+      // Handle Escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && drawer.classList.contains('active')) {
+          closeDrawer();
+        }
+      });
+    };
+
+    // Start the component
+    init();
+  })();
+</script>
+
+<style>
+  :root {
+    --color-primary: #0066ff;
+    --color-primary-dark: #0052cc;
+    --color-success: #10b981;
+    --color-border: #e5e7eb;
+    --color-bg: #ffffff;
+    --color-text: #1f2937;
+    --color-text-secondary: #6b7280;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 20px 25px rgba(0, 0, 0, 0.15);
+    --transition: all 0.3s ease;
+  }
+
+  .product-comparer-container {
+    width: 100%;
+    position: relative;
+  }
+
+  /* Products Grid */
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    padding: 2rem 1rem;
+  }
+
+  /* Product Card */
+  .product-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+  }
+
+  .product-card:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--color-primary);
+  }
+
+  .product-image {
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .product-info {
+    flex: 1;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .product-category {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+    letter-spacing: 0.5px;
+  }
+
+  .product-name {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  .price-section {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+  }
+
+  .price-old {
+    font-size: 0.95rem;
+    color: var(--color-text-secondary);
+    text-decoration: line-through;
+  }
+
+  .price-new {
+    font-size: 1.5rem;
+    color: var(--color-success);
+  }
+
+  .specs-preview {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+  }
+
+  .spec-item {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .spec-label {
+    font-weight: 600;
+  }
+
+  .spec-value {
+    color: var(--color-text);
+  }
+
+  .card-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0 1.25rem 1.25rem;
+  }
+
+  .btn-purchase {
+    display: inline-block;
+    padding: 0.75rem 1rem;
+    background: var(--color-primary);
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-align: center;
+    transition: var(--transition);
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-purchase:hover {
+    background: var(--color-primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .btn-compare {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: transparent;
+    color: var(--color-primary);
+    border: 2px solid var(--color-primary);
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .btn-compare:hover {
+    background: var(--color-primary);
+    color: white;
+  }
+
+  .btn-compare.active {
+    background: var(--color-primary);
+    color: white;
+    box-shadow: 0 0 12px rgba(0, 102, 255, 0.3);
+  }
+
+  .compare-icon {
+    font-size: 1.2rem;
+  }
+
+  /* Comparison Drawer */
+  .drawer-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 39;
+  }
+
+  .drawer-backdrop.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .comparison-drawer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--color-bg);
+    border-top: 2px solid var(--color-primary);
+    max-height: 85vh;
+    overflow-y: auto;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 40;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  .comparison-drawer.active {
+    transform: translateY(0);
+  }
+
+  .drawer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+    position: sticky;
+    top: 0;
+    background: var(--color-bg);
+  }
+
+  .drawer-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--color-text);
+  }
+
+  .btn-close {
+    background: transparent;
+    border: none;
+    font-size: 1.75rem;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: var(--transition);
+  }
+
+  .btn-close:hover {
+    color: var(--color-text);
+  }
+
+  /* Comparison Table */
+  .comparison-table-wrapper {
+    overflow-x: auto;
+    padding: 1.5rem;
+  }
+
+  .comparison-table {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    min-width: 100%;
+  }
+
+  .comparison-row {
+    display: grid;
+    grid-template-columns: 150px repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid var(--color-border);
+    align-items: center;
+  }
+
+  .comparison-row.header-row {
+    background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+    font-weight: 700;
+    color: var(--color-text);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .comparison-col {
+    font-size: 0.95rem;
+    color: var(--color-text);
+    word-break: break-word;
+  }
+
+  .comparison-col.col-label {
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    font-size: 0.85rem;
+  }
+
+  .comparison-col.col-product {
+    font-weight: 700;
+    color: var(--color-primary);
+    font-size: 1rem;
+  }
+
+  .comparison-col.price-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .comparison-col .price-old {
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+    text-decoration: line-through;
+  }
+
+  .comparison-col .price-new {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-success);
+  }
+
+  .comparison-row.cta-row .comparison-col {
+    display: flex;
+    justify-content: center;
+  }
+
+  .btn-comparison-cta {
+    display: inline-block;
+    padding: 0.625rem 1rem;
+    background: var(--color-primary);
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-align: center;
+    transition: var(--transition);
+  }
+
+  .btn-comparison-cta:hover {
+    background: var(--color-primary-dark);
+    transform: translateY(-2px);
+  }
+
+  .drawer-footer {
+    padding: 1.5rem;
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .btn-clear-all {
+    padding: 0.875rem 2rem;
+    background: transparent;
+    color: var(--color-text-secondary);
+    border: 2px solid var(--color-border);
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .btn-clear-all:hover {
+    background: #f3f4f6;
+    color: var(--color-text);
+    border-color: var(--color-text-secondary);
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .products-grid {
+      grid-template-columns: 1fr;
+      padding: 1rem;
+      gap: 1rem;
+    }
+
+    .comparison-row {
+      grid-template-columns: 100px repeat(auto-fit, minmax(150px, 1fr));
+      gap: 0.75rem;
+      padding: 0.75rem;
+      font-size: 0.85rem;
+    }
+
+    .comparison-col.col-label {
+      font-size: 0.75rem;
+    }
+
+    .drawer-header {
+      padding: 1rem;
+    }
+
+    .drawer-title {
+      font-size: 1.25rem;
+    }
+
+    .comparison-table-wrapper {
+      padding: 1rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .comparison-row {
+      grid-template-columns: 80px 1fr;
+      gap: 0.5rem;
+    }
+
+    .btn-compare .compare-text {
+      display: none;
+    }
+
+    .btn-compare {
+      min-width: 44px;
+    }
+  }
+
+  /* Dark mode support */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-bg: #1f2937;
+      --color-text: #f3f4f6;
+      --color-text-secondary: #d1d5db;
+      --color-border: #374151;
+    }
+
+    .product-image {
+      background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+    }
+
+    .comparison-row.header-row {
+      background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+    }
+
+    .btn-clear-all:hover {
+      background: #374151;
+    }
+  }
+</style>
