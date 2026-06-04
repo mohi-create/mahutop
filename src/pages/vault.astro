@@ -169,3 +169,59 @@ import VaultLayout from '../layouts/VaultLayout.astro';
     });
   });
 </script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const inputTextArea = document.querySelector('textarea'); 
+    const buttons = document.querySelectorAll('button');
+    const outputContainer = document.querySelector('#output-results') || document.querySelector('.output-container');
+
+    // Identify our specific buttons based on their text content
+    let normalizeButton = null;
+    let clearButton = null;
+
+    buttons.forEach(btn => {
+      if (btn.textContent.includes('Execute Normalization')) normalizeButton = btn;
+      if (btn.textContent.includes('Clear Terminal')) clearButton = btn;
+    });
+
+    if (!inputTextArea || !outputContainer) {
+      console.warn("Phase 2 Warning: Missing required UI DOM elements in layout structure.");
+      return;
+    }
+
+    // 1. Normalization Logic
+    if (normalizeButton) {
+      normalizeButton.addEventListener('click', () => {
+        let text = inputTextArea.value;
+
+        // Rule 1: Alif Normalization (Unify 'أ', 'إ', and 'آ' into plain 'ا')
+        text = text.replace(/[أإآ]/g, 'ا');
+
+        // Rule 2: Ya Normalization (Convert dotless 'ى' / Alif Maqsura into standard 'ي')
+        text = text.replace(/ى/g, 'ي');
+
+        // Rule 3: Ta Marbuta Normalization (Convert 'ة' into 'ه')
+        text = text.replace(/ة/g, 'ه');
+
+        // Rule 4: Diacritic Stripping (Strip out all Arabic Tashkeel/Harakat)
+        text = text.replace(/[\u064B-\u0652]/g, '');
+
+        // Rule 5: Whitespace Trimming (Clean up double spaces and redundant line breaks)
+        text = text.replace(/ +/g, ' '); 
+        text = text.replace(/\n\s*\n+/g, '\n'); 
+        text = text.trim();
+
+        outputContainer.textContent = text;
+      });
+    }
+
+    // 2. Clear Terminal Logic
+    if (clearButton) {
+      clearButton.addEventListener('click', () => {
+        inputTextArea.value = '';
+        outputContainer.textContent = 'Your normalized text will appear here...';
+      });
+    }
+  });
+</script>
