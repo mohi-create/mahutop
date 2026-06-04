@@ -65,117 +65,61 @@ const routeMap = {
     </div>
 
     <script>
-      // Client-side translation handler: updates all nested elements
-      const translations = {
+      // Explicit Type Interface for the Translation Matrix
+      interface TranslationDictionary {
+        [key: string]: {
+          [key: string]: string;
+        };
+      }
+
+      const translations: TranslationDictionary = {
         en: {
           brand: "MAHUTOP",
           home: "HOME_BASE",
           vault: "SOVEREIGN VAULT",
           bazaar: "GRAND BAZAAR",
-          logs: "SYSTEM LOGS",
-          vaultPrompt: "ENTER CRITICAL ACCESS KEY:"
+          logs: "SYSTEM LOGS"
         },
         ar: {
           brand: "ماهوتوب",
           home: "الصفحة الرئيسية",
           vault: "خزنة السيادة",
           bazaar: "البازار الكبير",
-          logs: "سجلات النظام",
-          vaultPrompt: "أدخل مفتاح الوصول الحرج:"
+          logs: "سجلات النظام"
         }
       };
 
-      const routeMap = {
-        home: '/',
-        vault: '/vault',
-        bazaar: '/links',
-        logs: '/reviews'
-      };
-
-      const storageKey = 'mahutop-lang';
-
-      const getPreferredLang = () => {
-        const saved = localStorage.getItem(storageKey);
-        return saved === 'ar' ? 'ar' : 'en';
-      };
-
-      const applyLanguage = (lang) => {
-        document.documentElement.lang = lang;
-        document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-        document.body.classList.toggle('dir-rtl', lang === 'ar');
-
-        // Update textual content for any element that opts in via data-i18n-key
-        document.querySelectorAll('[data-i18n-key]').forEach((node) => {
-          const key = node.dataset.i18nKey;
-          if (!key) return;
-
-          const term = translations[lang] && translations[lang][key] ? translations[lang][key] : null;
-          if (term !== null) {
-            // If element is an input/button that uses value
-            if (node instanceof HTMLInputElement || node instanceof HTMLButtonElement) {
-              if (node.hasAttribute('value')) node.value = term;
-              else node.textContent = term;
-            } else if (node instanceof HTMLTextAreaElement) {
-              if (node.hasAttribute('placeholder')) node.placeholder = term;
-              else node.textContent = term;
-            } else {
-              node.textContent = term;
-            }
-          }
-
-          // If translations include attribute-specific variants like key_placeholder
-          // allow placeholders and titles to be updated as well
-          const placeholderKey = `${key}_placeholder`;
-          if (translations[lang] && translations[lang][placeholderKey]) {
-            try { node.setAttribute('placeholder', translations[lang][placeholderKey]); } catch (e) {}
-          }
-
-          const titleKey = `${key}_title`;
-          if (translations[lang] && translations[lang][titleKey]) {
-            try { node.setAttribute('title', translations[lang][titleKey]); } catch (e) {}
-          }
-        });
-
-        // Update hrefs for elements that declare a data-key mapping
-        document.querySelectorAll('[data-key]').forEach((node) => {
-          const key = node.dataset.key;
-          if (!key) return;
-          const target = routeMap[key];
-          if (target && node instanceof HTMLElement) {
-            if (node.tagName.toLowerCase() === 'a') node.setAttribute('href', target);
-            else node.setAttribute('data-href', target);
-          }
-        });
-      };
-
       document.addEventListener('DOMContentLoaded', () => {
-        const toggle = document.getElementById('lang-toggle');
-        const activeLang = getPreferredLang();
+        const langToggle = document.getElementById('lang-toggle') as HTMLSelectElement | null;
+        
+        function applyTranslations(lang: 'en' | 'ar') {
+          // Safely switch document direction matrix
+          document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+          document.documentElement.lang = lang;
 
-        if (toggle) toggle.value = activeLang;
-        applyLanguage(activeLang);
-
-        // Click interception to normalize internal links to routeMap
-        document.body.addEventListener('click', (event) => {
-          const anchor = (event.target && event.target.closest) ? event.target.closest('a') : null;
-          if (!anchor) return;
-          const href = anchor.getAttribute('href');
-          if (!href || href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('#')) return;
-
-          const key = anchor.dataset.key;
-          if (key && routeMap[key]) {
-            anchor.setAttribute('href', routeMap[key]);
-          } else if (!Object.values(routeMap).includes(href)) {
-            anchor.setAttribute('href', routeMap.home);
-          }
-        }, true);
-
-        if (toggle) {
-          toggle.addEventListener('change', (event) => {
-            const selected = (event.target && event.target.value === 'ar') ? 'ar' : 'en';
-            localStorage.setItem(storageKey, selected);
-            applyLanguage(selected);
+          // Type-safe element querying
+          const dynamicElements = document.querySelectorAll('[data-i18n-key]');
+          dynamicElements.forEach((el) => {
+            const htmlEl = el as HTMLElement;
+            const key = htmlEl.dataset.i18nKey;
+            if (key && translations[lang] && translations[lang][key]) {
+              htmlEl.textContent = translations[lang][key];
+            }
           });
+        }
+
+        if (langToggle) {
+          langToggle.addEventListener('change', (e) => {
+            const target = e.target as HTMLSelectElement;
+            const selectedLang = target.value as 'en' | 'ar';
+            localStorage.setItem('mahutop_lang', selectedLang);
+            applyTranslations(selectedLang);
+          });
+
+          // Restore session memory state safely
+          const savedLang = (localStorage.getItem('mahutop_lang') || 'en') as 'en' | 'ar';
+          langToggle.value = savedLang;
+          applyTranslations(savedLang);
         }
       });
     </script>
