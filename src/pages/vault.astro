@@ -90,6 +90,80 @@ import VaultLayout from '../layouts/VaultLayout.astro';
         opacity: 1;
       }
     }
+
+    /* Control Panel Styling */
+    .control-panel {
+      border: 1px solid #30363d;
+      background: #161b22;
+      padding: 15px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 12px;
+      color: #8b949e;
+      font-family: 'Courier New', Courier, monospace;
+      margin-bottom: 16px;
+      border-radius: 6px;
+    }
+
+    .control-panel h3 {
+      grid-column: 1 / -1;
+      color: #58a6ff;
+      font-size: 14px;
+      font-weight: 600;
+      margin: 0 0 8px 0;
+      font-family: monospace;
+    }
+
+    .control-panel label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: color 0.2s ease;
+    }
+
+    .control-panel label:hover {
+      color: #c9d1d9;
+    }
+
+    .control-panel input[type="checkbox"] {
+      cursor: pointer;
+      accent-color: #58a6ff;
+    }
+
+    /* Analytics Panel Styling */
+    .analytics-panel {
+      border: 1px solid #30363d;
+      background: #0d1117;
+      padding: 15px;
+      border-radius: 6px;
+      color: #8b949e;
+      font-family: 'Courier New', Courier, monospace;
+      margin-top: 16px;
+    }
+
+    .analytics-panel h3 {
+      color: #58a6ff;
+      font-size: 13px;
+      font-weight: 600;
+      margin: 0 0 12px 0;
+      font-family: monospace;
+    }
+
+    .mono-list {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 12px;
+      line-height: 1.6;
+      color: #c9d1d9;
+    }
+
+    .mono-list .frequency-item {
+      padding: 4px 8px;
+      margin: 2px 0;
+      background: rgba(88, 166, 255, 0.05);
+      border-left: 2px solid #58a6ff;
+    }
   </style>
   <div class='max-w-4xl mx-auto space-y-6 mt-4'>
     
@@ -121,6 +195,16 @@ import VaultLayout from '../layouts/VaultLayout.astro';
           >
             Drag & Drop an Arabic .txt, .pdf, or .docx file here or Click to Browse
           </div>
+
+          <!-- Normalization Control Panel -->
+          <div class="control-panel">
+            <h3>Engine Rule Settings</h3>
+            <label><input type="checkbox" id="toggle-alif" checked /> Normalize Alif (أ، إ، آ -> ا)</label>
+            <label><input type="checkbox" id="toggle-ya" checked /> Normalize Ya (ي -> ى)</label>
+            <label><input type="checkbox" id="toggle-ta" checked /> Normalize Ta Marbuta (ة -> ه)</label>
+            <label><input type="checkbox" id="toggle-tashkeel" checked /> Strip Diacritics (Tashkeel)</label>
+          </div>
+
           <textarea 
             id='input-textarea'
             rows='6' 
@@ -155,6 +239,12 @@ import VaultLayout from '../layouts/VaultLayout.astro';
         <!-- Output Terminal Container -->
         <div id='output-results' class='output-container mt-6 p-5 rounded-lg border border-emerald-500/30 bg-slate-950 text-slate-200 font-mono text-sm min-h-[8rem] max-h-[16rem] overflow-y-auto shadow-inner ring-1 ring-slate-800/50'>
           <!-- Phase 2 engine output goes here -->
+        </div>
+
+        <!-- Analytics Panel: Phrase Frequency Analysis -->
+        <div class="analytics-panel">
+          <h3>Subsystem Diagnostics // Phrase Frequency Analysis</h3>
+          <div id="frequency-results" class="mono-list">No data analyzed yet.</div>
         </div>
 
         <!-- Phase 3: Statistics Dashboard -->
@@ -267,6 +357,52 @@ import VaultLayout from '../layouts/VaultLayout.astro';
       }
     }
 
+    /**
+     * Analyze word frequency from normalized text.
+     * @param {string} cleanText - The normalized text to analyze
+     */
+    function analyzeFrequency(cleanText) {
+      if (!cleanText || cleanText === 'Your normalized text will appear here...') {
+        var frequencyResults = document.getElementById('frequency-results');
+        if (frequencyResults) frequencyResults.textContent = 'No data analyzed yet.';
+        return;
+      }
+
+      // Split text into words by spaces
+      var words = cleanText.split(/\s+/).filter(function(word) { return word.length > 0; });
+
+      // Create a map to track word occurrences, ignoring words under 3 characters
+      var frequencyMap = {};
+      words.forEach(function(word) {
+        // Ignore words under 3 characters
+        if (word.length < 3) return;
+        frequencyMap[word] = (frequencyMap[word] || 0) + 1;
+      });
+
+      // Convert to array and sort by frequency (highest to lowest)
+      var sortedWords = Object.entries(frequencyMap)
+        .map(function(entry) { return { word: entry[0], count: entry[1] }; })
+        .sort(function(a, b) { return b.count - a.count; })
+        .slice(0, 10); // Get top 10
+
+      // Render results in the frequency-results div
+      var frequencyResults = document.getElementById('frequency-results');
+      if (!frequencyResults) return;
+
+      if (sortedWords.length === 0) {
+        frequencyResults.textContent = 'No words found (all words filtered out as too short).';
+        return;
+      }
+
+      frequencyResults.innerHTML = '';
+      sortedWords.forEach(function(item) {
+        var itemDiv = document.createElement('div');
+        itemDiv.className = 'frequency-item';
+        itemDiv.textContent = '[' + item.word + ']: ' + item.count + ' occurrence' + (item.count !== 1 ? 's' : '');
+        frequencyResults.appendChild(itemDiv);
+      });
+    }
+
     if (normalizeButton && inputTextArea && outputContainer) {
       normalizeButton.addEventListener('click', function () {
         var raw = inputTextArea.value || '';
@@ -276,10 +412,19 @@ import VaultLayout from '../layouts/VaultLayout.astro';
         var hasTa = /ة/.test(raw);
         var hasDiacritics = /[\u064B-\u0652]/.test(raw);
 
-        var text = raw.replace(/[أإآ]/g, 'ا');
-        text = text.replace(/ى/g, 'ي');
-        text = text.replace(/ة/g, 'ه');
-        text = text.replace(/[\u064B-\u0652]/g, '');
+        var text = raw;
+        if (document.getElementById('toggle-alif').checked) {
+          text = text.replace(/[أإآ]/g, 'ا');
+        }
+        if (document.getElementById('toggle-ya').checked) {
+          text = text.replace(/ى/g, 'ي');
+        }
+        if (document.getElementById('toggle-ta').checked) {
+          text = text.replace(/ة/g, 'ه');
+        }
+        if (document.getElementById('toggle-tashkeel').checked) {
+          text = text.replace(/[\u064B-\u0652]/g, '');
+        }
         text = text.replace(/ +/g, ' ').replace(/\n\s*\n+/g, '\n').trim();
 
         outputContainer.textContent = text || 'Your normalized text will appear here...';
@@ -293,6 +438,9 @@ import VaultLayout from '../layouts/VaultLayout.astro';
         var outputLen = text.length;
         if (charStats) charStats.textContent = "Input: " + inputLen + " chars | Output: " + outputLen + " chars";
         updateDownloadButtonState();
+
+        // Trigger frequency analysis on successful normalization
+        analyzeFrequency(text);
       });
     }
 
@@ -307,10 +455,19 @@ import VaultLayout from '../layouts/VaultLayout.astro';
       var hasTa = /ة/.test(raw);
       var hasDiacritics = /[\u064B-\u0652]/.test(raw);
 
-      var text = raw.replace(/[أإآ]/g, 'ا');
-      text = text.replace(/ى/g, 'ي');
-      text = text.replace(/ة/g, 'ه');
-      text = text.replace(/[\u064B-\u0652]/g, '');
+      var text = raw;
+      if (document.getElementById('toggle-alif').checked) {
+        text = text.replace(/[أإآ]/g, 'ا');
+      }
+      if (document.getElementById('toggle-ya').checked) {
+        text = text.replace(/ى/g, 'ي');
+      }
+      if (document.getElementById('toggle-ta').checked) {
+        text = text.replace(/ة/g, 'ه');
+      }
+      if (document.getElementById('toggle-tashkeel').checked) {
+        text = text.replace(/[\u064B-\u0652]/g, '');
+      }
       text = text.replace(/ +/g, ' ').replace(/\n\s*\n+/g, '\n').trim();
 
       if (outputContainer) outputContainer.textContent = text || 'Your normalized text will appear here...';

@@ -15,6 +15,10 @@ const reviews = Object.values(posts);
       <p class="page-copy">Encrypted review logs, ready for audit and deeper analysis.</p>
     </header>
 
+    <div class="search-wrapper">
+      <input type="text" id="log-search" placeholder="FILTER LOGS // ENTER SYSTEM KEYWORDS..." autocomplete="off" />
+    </div>
+
     <section class="logs-grid" aria-label="Review logs database">
       {reviews.map((review: any) => (
         <a class="log-row" href={review.url}>
@@ -125,4 +129,45 @@ const reviews = Object.values(posts);
       text-align: left;
     }
   }
+
+  .search-wrapper {
+    margin-bottom: 1.25rem;
+  }
+
+  #log-search {
+    width: 100%;
+    background: #0d1117;
+    border: 1px solid #30363d;
+    color: #c9d1d9;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    padding: 0.95rem 1rem;
+    border-radius: 0.75rem;
+    outline: none;
+    transition: box-shadow 180ms ease, border-color 180ms ease;
+  }
+
+  #log-search:focus {
+    border-color: #58a6ff;
+    box-shadow: 0 0 0 4px rgba(88, 166, 255, 0.12);
+  }
 </style>
+
+<script>
+  // @ts-nocheck
+  const searchInput = document.querySelector('#log-search');
+  const logRows = Array.from(document.querySelectorAll('.log-row'));
+
+  if (searchInput && logRows.length) {
+    searchInput.addEventListener('input', (event) => {
+      const query = event.target.value.trim().toLowerCase();
+
+      logRows.forEach((row) => {
+        const title = row.querySelector('.row-title')?.textContent?.toLowerCase() ?? '';
+        const description = row.querySelector('.row-description')?.textContent?.toLowerCase() ?? '';
+        const matches = query.length === 0 || title.includes(query) || description.includes(query);
+
+        row.style.display = matches ? '' : 'none';
+      });
+    });
+  }
+</script>
