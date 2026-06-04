@@ -184,7 +184,8 @@ import VaultLayout from '../layouts/VaultLayout.astro';
 
   document.addEventListener('DOMContentLoaded', () => {
     /** @type {HTMLTextAreaElement | null} */
-    const inputTextArea = document.querySelector('textarea');
+    const inputTextArea = document.querySelector('#input-textarea');
+    const STORAGE_KEY = 'vault_input_cache';
     /** @type {HTMLDivElement | null} */
     const outputContainer = document.querySelector('#output-results') || document.querySelector('.output-container');
 
@@ -252,6 +253,19 @@ import VaultLayout from '../layouts/VaultLayout.astro';
 
     // Initialize UI
     resetUI();
+
+    if (inputTextArea) {
+      inputTextArea.addEventListener('input', function (event) {
+        if (!event.target) return;
+        localStorage.setItem(STORAGE_KEY, event.target.value);
+      });
+
+      const cachedText = localStorage.getItem(STORAGE_KEY);
+      if (cachedText) {
+        inputTextArea.value = cachedText;
+        refreshFromTextArea();
+      }
+    }
 
     if (normalizeButton && inputTextArea && outputContainer) {
       normalizeButton.addEventListener('click', function () {
@@ -325,6 +339,7 @@ import VaultLayout from '../layouts/VaultLayout.astro';
 
       function loadText(text) {
         inputTextArea.value = text || '';
+        localStorage.setItem(STORAGE_KEY, inputTextArea.value);
         refreshFromTextArea();
       }
 
@@ -456,6 +471,7 @@ import VaultLayout from '../layouts/VaultLayout.astro';
     if (clearWorkspaceButton) {
       clearWorkspaceButton.addEventListener('click', function () {
         if (fileInput) fileInput.value = '';
+        localStorage.removeItem(STORAGE_KEY);
         resetUI();
       });
     }
