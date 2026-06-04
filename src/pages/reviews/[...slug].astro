@@ -4,8 +4,8 @@ import Layout from '../../layouts/Layout.astro';
 import { getLangFromUrl, useTranslations } from '../../utils/i18n';
 
 export async function getStaticPaths() {
-  const dataEntries = await getCollection('reviews');
-  return dataEntries.map((entry: any) => ({
+  const dataEntries = await getCollection('reviews').catch(() => []);
+  return (dataEntries || []).map((entry: any) => ({
     params: { slug: entry.slug || entry.id },
     props: { entry },
   }));
