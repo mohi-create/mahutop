@@ -1,13 +1,17 @@
+---
 import Navbar from '../components/Navbar.astro';
 import MainLayout from '../layouts/MainLayout.astro';
 
-<head>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
-</head>
+// External scripts are handled via script tags in the component
+// They will load when the page is rendered
+---
 
 <MainLayout title="Sovereign Vault">
   <Navbar />
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+  
   <style is:global>
     /* Premium Terminal Output Styling */
     .output-container {
@@ -448,3 +452,4 @@ import MainLayout from '../layouts/MainLayout.astro';
     cursor: not-allowed !important;
   }
 </style>
+</MainLayout>
