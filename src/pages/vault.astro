@@ -122,6 +122,22 @@ import VaultLayout from '../layouts/VaultLayout.astro';
         <div id='output-results' class='output-container mt-6 p-5 rounded-lg border border-emerald-500/30 bg-slate-950 text-slate-200 font-mono text-sm min-h-[8rem] max-h-[16rem] overflow-y-auto shadow-inner ring-1 ring-slate-800/50'>
           <!-- Phase 2 engine output goes here -->
         </div>
+
+        <!-- Phase 3: Statistics Dashboard -->
+        <div class='mt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3'>
+          <div id='char-stats' class='text-sm font-mono text-slate-400'>Input: 0 chars | Output: 0 chars</div>
+
+          <div class='flex items-center gap-3'>
+            <div id='rule-badges' class='flex gap-2 items-center'>
+              <span id='badge-alif' class='px-2 py-1 rounded text-xs font-mono bg-slate-800/40 text-slate-500 opacity-50'>Alif Fixed</span>
+              <span id='badge-ya' class='px-2 py-1 rounded text-xs font-mono bg-slate-800/40 text-slate-500 opacity-50'>Ya Normalized</span>
+              <span id='badge-ta' class='px-2 py-1 rounded text-xs font-mono bg-slate-800/40 text-slate-500 opacity-50'>Ta Marbuta Cleaned</span>
+              <span id='badge-diacritics' class='px-2 py-1 rounded text-xs font-mono bg-slate-800/40 text-slate-500 opacity-50'>Diacritics Stripped</span>
+            </div>
+
+            <button id='copy-button' class='ml-2 bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-slate-100 px-3 py-1.5 rounded-lg font-mono text-xs font-semibold transition-all duration-150 border border-slate-700'>Copy</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -129,38 +145,119 @@ import VaultLayout from '../layouts/VaultLayout.astro';
 </VaultLayout>
 
 <script>
+  // @ts-nocheck
+
   document.addEventListener('DOMContentLoaded', () => {
-    const inputTextArea = document.querySelector('textarea'); 
-    const buttons = document.querySelectorAll('button');
+    /** @type {HTMLTextAreaElement | null} */
+    const inputTextArea = document.querySelector('textarea');
+    /** @type {HTMLDivElement | null} */
     const outputContainer = document.querySelector('#output-results') || document.querySelector('.output-container');
 
-    let normalizeButton = null;
-    let clearButton = null;
+    /** @type {HTMLDivElement | null} */
+    const charStats = document.getElementById('char-stats');
+    /** @type {HTMLButtonElement | null} */
+    const copyButton = document.getElementById('copy-button');
+    /** @type {HTMLElement | null} */
+    const badgeAlif = document.getElementById('badge-alif');
+    /** @type {HTMLElement | null} */
+    const badgeYa = document.getElementById('badge-ya');
+    /** @type {HTMLElement | null} */
+    const badgeTa = document.getElementById('badge-ta');
+    /** @type {HTMLElement | null} */
+    const badgeDiacritics = document.getElementById('badge-diacritics');
 
-    buttons.forEach(btn => {
-      if (btn.textContent.includes('Execute Normalization')) normalizeButton = btn;
-      if (btn.textContent.includes('Clear Terminal')) clearButton = btn;
-    });
+    /** @type {HTMLButtonElement | null} */
+    const normalizeButton = /** @type {HTMLButtonElement | null} */ (document.getElementById('normalize-button'));
+    /** @type {HTMLButtonElement | null} */
+    const clearButton = /** @type {HTMLButtonElement | null} */ (document.getElementById('clear-terminal'));
 
-    if (inputTextArea && outputContainer) {
-      if (normalizeButton) {
-        normalizeButton.addEventListener('click', () => {
-          let text = inputTextArea.value;
-          text = text.replace(/[أإآ]/g, 'ا'); // Rule 1: Alif
-          text = text.replace(/ى/g, 'ي');     // Rule 2: Ya
-          text = text.replace(/ة/g, 'ه');     // Rule 3: Ta Marbuta
-          text = text.replace(/[\u064B-\u0652]/g, ''); // Rule 4: Harakat
-          text = text.replace(/ +/g, ' ').replace(/\n\s*\n+/g, '\n').trim(); // Rule 5: Spaces
-          outputContainer.textContent = text;
-        });
+    /**
+     * Update a badge element's active state.
+     * @param {HTMLElement | null} el
+     * @param {boolean} active
+     */
+    function updateBadge(el, active) {
+      if (!el) return;
+      if (active) {
+        el.classList.remove('opacity-50','bg-slate-800/40','text-slate-500');
+        el.classList.add('bg-emerald-600','text-slate-950','opacity-100');
+      } else {
+        el.classList.add('opacity-50','bg-slate-800/40','text-slate-500');
+        el.classList.remove('bg-emerald-600','text-slate-950','opacity-100');
       }
+    }
 
-      if (clearButton) {
-        clearButton.addEventListener('click', () => {
-          inputTextArea.value = '';
-          outputContainer.textContent = 'Your normalized text will appear here...';
-        });
-      }
+    /**
+     * Reset UI to default state.
+     */
+    function resetUI() {
+      if (inputTextArea) inputTextArea.value = '';
+      if (outputContainer) outputContainer.textContent = 'Your normalized text will appear here...';
+      if (charStats) charStats.textContent = 'Input: 0 chars | Output: 0 chars';
+      updateBadge(badgeAlif, false);
+      updateBadge(badgeYa, false);
+      updateBadge(badgeTa, false);
+      updateBadge(badgeDiacritics, false);
+    }
+
+    // Initialize UI
+    resetUI();
+
+    if (normalizeButton && inputTextArea && outputContainer) {
+      normalizeButton.addEventListener('click', function () {
+        var raw = inputTextArea.value || '';
+
+        var hasAlif = /[أإآ]/.test(raw);
+        var hasYa = /ى/.test(raw);
+        var hasTa = /ة/.test(raw);
+        var hasDiacritics = /[\u064B-\u0652]/.test(raw);
+
+        var text = raw.replace(/[أإآ]/g, 'ا');
+        text = text.replace(/ى/g, 'ي');
+        text = text.replace(/ة/g, 'ه');
+        text = text.replace(/[\u064B-\u0652]/g, '');
+        text = text.replace(/ +/g, ' ').replace(/\n\s*\n+/g, '\n').trim();
+
+        outputContainer.textContent = text || 'Your normalized text will appear here...';
+
+        updateBadge(badgeAlif, hasAlif);
+        updateBadge(badgeYa, hasYa);
+        updateBadge(badgeTa, hasTa);
+        updateBadge(badgeDiacritics, hasDiacritics);
+
+        var inputLen = raw.length;
+        var outputLen = text.length;
+        if (charStats) charStats.textContent = "Input: " + inputLen + " chars | Output: " + outputLen + " chars";
+      });
+    }
+
+    if (copyButton) {
+      copyButton.addEventListener('click', function () {
+        var text = outputContainer ? outputContainer.textContent || '' : '';
+        if (!text) return;
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text);
+          } else {
+            var ta = document.createElement('textarea');
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+          }
+          copyButton.textContent = 'Copied';
+          setTimeout(function () { copyButton.textContent = 'Copy'; }, 1200);
+        } catch (e) {
+          console.error('Copy failed', e);
+        }
+      });
+    }
+
+    if (clearButton) {
+      clearButton.addEventListener('click', function () {
+        resetUI();
+      });
     }
   });
 </script>
