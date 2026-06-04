@@ -239,10 +239,22 @@ import VaultLayout from '../layouts/VaultLayout.astro';
           <!-- Normalization Control Panel -->
           <div class="control-panel">
             <h3>Engine Rule Settings</h3>
-            <label><input type="checkbox" id="toggle-alif" checked /> Normalize Alif (أ، إ، آ -> ا)</label>
-            <label><input type="checkbox" id="toggle-ya" checked /> Normalize Ya (ي -> ى)</label>
-            <label><input type="checkbox" id="toggle-ta" checked /> Normalize Ta Marbuta (ة -> ه)</label>
-            <label><input type="checkbox" id="toggle-tashkeel" checked /> Strip Diacritics (Tashkeel)</label>
+            <div class="flex items-center gap-2">
+              <input type="checkbox" id="toggle-alif" checked class="font-mono text-emerald-500" />
+              <label for="toggle-alif" class="text-sm text-gray-300">Normalize Alif (أ، إ، آ -> ا)</label>
+            </div>
+            <div class="flex items-center gap-2">
+              <input type="checkbox" id="toggle-ya" checked class="font-mono text-emerald-500" />
+              <label for="toggle-ya" class="text-sm text-gray-300">Normalize Ya (ي -> ى)</label>
+            </div>
+            <div class="flex items-center gap-2">
+              <input type="checkbox" id="toggle-ta" checked class="font-mono text-emerald-500" />
+              <label for="toggle-ta" class="text-sm text-gray-300">Normalize Ta Marbuta (ة -> ه)</label>
+            </div>
+            <div class="flex items-center gap-2">
+              <input type="checkbox" id="toggle-tashkeel" checked class="font-mono text-emerald-500" />
+              <label for="toggle-tashkeel" class="text-sm text-gray-300">Strip Diacritics (Tashkeel)</label>
+            </div>
           </div>
 
           <textarea 
