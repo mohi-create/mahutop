@@ -321,8 +321,8 @@ import VaultLayout from '../layouts/VaultLayout.astro';
   if (sessionStorage.getItem('vault_secure_unlocked') !== 'true') {
     document.addEventListener('DOMContentLoaded', () => {
       const userKey = prompt("ENTER CRITICAL VAULT ACCESS PASSPHRASE:");
-      // Replace 'YOUR_SUPERIOR_PASSWORD' with your preferred master key
-      if (userKey === "YOUR_SUPERIOR_PASSWORD") {
+      // Master key for secure access
+      if (userKey === "mahutop2026") {
         sessionStorage.setItem('vault_secure_unlocked', 'true');
         alert("ACCESS GRANTED // SOVEREIGN ENGINES ONLINE");
       } else {

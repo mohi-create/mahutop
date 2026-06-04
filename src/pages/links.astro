@@ -63,6 +63,27 @@ import MainLayout from '../layouts/MainLayout.astro';
       </div>
     </section>
 
+    <!-- SECTION 5: AI SHOPPING ASSISTANT SIMULATION DASHBOARD -->
+    <section class="section-assistant">
+      <div class="assistant-panel">
+        <div class="assistant-header">
+          <div>
+            <h2 class="sec-title">05 // AI SHOPPING ASSISTANT SIMULATION DASHBOARD</h2>
+            <p class="assistant-copy">Type your goal in plain language and receive an instant, curated component breakdown with pricing and affiliate routing.</p>
+          </div>
+        </div>
+
+        <div class="assistant-body">
+          <label for="assistant-goal">Your goal</label>
+          <input id="assistant-goal" type="text" placeholder="I have $800 to start YouTube" autocomplete="off" />
+          <button id="assistant-run" type="button">Generate Shopping Plan</button>
+
+          <div id="assistant-output" class="assistant-output">
+            <div class="assistant-empty">Enter a goal above and press Generate to see a premium recommendation roadmap.</div>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <style>
@@ -117,6 +138,31 @@ import MainLayout from '../layouts/MainLayout.astro';
     .sec-title{font-size:0.95rem;letter-spacing:0.14em;text-transform:uppercase}
     .deal-card .countdown{font-weight:800;margin-left:6px}
     @media (max-width:720px){.cyber-grid,.fashion-cards{grid-template-columns:1fr}}
+
+    .section-assistant{background:linear-gradient(180deg, rgba(3,8,20,0.92), rgba(7,12,24,0.98));border:1px solid rgba(56,189,248,0.14);border-radius:18px;padding:1.5rem;box-shadow:0 24px 80px rgba(0,0,0,0.25);margin-top:1.8rem}
+    .assistant-panel{display:grid;gap:1.2rem}
+    .assistant-header{display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1rem}
+    .assistant-copy{color:#b8d7ff;max-width:760px;margin:0;font-size:0.95rem;line-height:1.6}
+    .assistant-body{display:grid;gap:1rem}
+    .assistant-body label{font-size:0.76rem;text-transform:uppercase;letter-spacing:0.18em;color:#6ee7b7}
+    #assistant-goal{width:100%;border:1px solid rgba(255,255,255,0.08);background:rgba(9,12,18,0.95);color:#e2e8f0;padding:1rem 1.1rem;border-radius:14px;font-size:0.96rem;outline:none;transition:border-color .2s ease,box-shadow .2s ease}
+    #assistant-goal:focus{border-color:#38bdf8;box-shadow:0 0 0 4px rgba(56,189,248,0.14)}
+    #assistant-run{align-self:flex-start;padding:0.95rem 1.4rem;border-radius:14px;background:linear-gradient(90deg,#38bdf8,#0ea5e9);color:#030712;font-weight:700;border:none;cursor:pointer;transition:transform .17s ease,box-shadow .17s ease}
+    #assistant-run:hover{transform:translateY(-1px);box-shadow:0 18px 38px rgba(56,189,248,0.23)}
+    .assistant-output{min-height:240px;border:1px solid rgba(255,255,255,0.08);background:rgba(1,5,12,0.92);border-radius:16px;padding:1.25rem;display:grid;gap:1rem}
+    .assistant-empty{color:#94a3b8;font-size:0.96rem;line-height:1.7}
+    .assistant-result{display:grid;gap:1rem}
+    .result-card{display:grid;gap:0.85rem;padding:1rem;border:1px solid rgba(56,189,248,0.12);border-radius:14px;background:rgba(8,12,18,0.95)}
+    .result-card h3{margin:0;color:#f8fafc;font-size:1rem}
+    .result-summary{color:#cbd5e1;font-size:0.94rem;line-height:1.6}
+    .component-list{list-style:none;padding:0;margin:0;display:grid;gap:0.8rem}
+    .component-item{display:grid;grid-template-columns:1fr auto;gap:0.8rem;padding:0.95rem 1rem;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px}
+    .component-item strong{display:block;color:#ffffff;font-size:0.96rem;margin-bottom:0.2rem}
+    .component-meta{display:grid;gap:0.2rem;font-size:0.88rem;color:#94a3b8}
+    .component-link{display:inline-flex;align-items:center;gap:0.45rem;padding:0.55rem 0.85rem;border-radius:10px;background:rgba(56,189,248,0.12);color:#dbeafe;text-decoration:none;font-size:0.86rem;font-weight:700}
+    .component-link:hover{background:rgba(56,189,248,0.22)}
+    .pricing-badge{color:#a5f3fc;font-weight:700}
+    @media (max-width:720px){.assistant-output{min-height:180px}.component-item{grid-template-columns:1fr}}    
   </style>
 
   <script>
@@ -158,6 +204,138 @@ import MainLayout from '../layouts/MainLayout.astro';
         const interval = setInterval(update,1000);
       });
     })();
+
+    const assistantGoalInput = document.getElementById('assistant-goal');
+    const assistantRunButton = document.getElementById('assistant-run');
+    const assistantOutput = document.getElementById('assistant-output');
+
+    const assistantPlans = [
+      {
+        id: 'youtube-starter',
+        title: 'YouTube Creator Starter Pack',
+        summary: 'Budget-optimized, high-impact kit for launching a premium channel, production workflow, and content-first studio.',
+        items: [
+          { name: '4K Vlogging Rig', price: '$499', link: 'https://mahutop.link/aff?item=4k-vlog', detail: 'Compact camera + mic combo for polished video.' },
+          { name: 'Studio Lighting Kit', price: '$129', link: 'https://mahutop.link/aff?item=lighting-kit', detail: 'Soft, cinematic lighting for clean visuals.' },
+          { name: 'Creator Workflow Laptop', price: '$279', link: 'https://mahutop.link/aff?item=creator-laptop', detail: 'Fast editing and rendering in a sleek form factor.' }
+        ]
+      },
+      {
+        id: 'arabic-nlp-rig',
+        title: 'Arabic NLP Rig Builder',
+        summary: 'A robust language-engineering stack tuned for Arabic text processing, translation, and research workflows.',
+        items: [
+          { name: 'GPU Compute Workstation', price: '$1,199', link: 'https://mahutop.link/aff?item=native-gpu-rig', detail: 'Multi-core rig for model fine-tuning and inference.' },
+          { name: 'Arabic Data Collection Suite', price: '$149', link: 'https://mahutop.link/aff?item=arabic-data-suite', detail: 'Prebuilt sources and annotation tools for Arabic NLP.' },
+          { name: 'Model Deployment License', price: '$79', link: 'https://mahutop.link/aff?item=deployment-license', detail: 'Secure runtime layer for production-grade pipelines.' }
+        ]
+      },
+      {
+        id: 'startup-budget',
+        title: 'Bootstrapped Performance Launch Kit',
+        summary: 'A smart starter set for creators and founders who need premium tools with a lean, results-driven budget.',
+        items: [
+          { name: 'Rapid Content Laptop', price: '$649', link: 'https://mahutop.link/aff?item=rapid-laptop', detail: 'Portable power for editing, streaming, and research.' },
+          { name: 'Audio Command Mic', price: '$99', link: 'https://mahutop.link/aff?item=audio-mic', detail: 'Broadcast-quality audio for podcasts and narratives.' },
+          { name: 'Growth Analytics Dashboard', price: '$59', link: 'https://mahutop.link/aff?item=analytics-suite', detail: 'Insight tools for launch tracking and conversion.' }
+        ]
+      }
+    ];
+
+    function renderAssistantPlan(plan) {
+      if (!assistantOutput) return;
+      assistantOutput.innerHTML = '';
+      const wrapper = document.createElement('div');
+      wrapper.className = 'assistant-result';
+
+      const title = document.createElement('h3');
+      title.textContent = plan.title;
+      wrapper.appendChild(title);
+
+      const summary = document.createElement('p');
+      summary.className = 'result-summary';
+      summary.textContent = plan.summary;
+      wrapper.appendChild(summary);
+
+      const list = document.createElement('ul');
+      list.className = 'component-list';
+
+      plan.items.forEach((item) => {
+        const itemEl = document.createElement('li');
+        itemEl.className = 'component-item';
+
+        const info = document.createElement('div');
+        const name = document.createElement('strong');
+        name.textContent = item.name;
+        const detail = document.createElement('div');
+        detail.className = 'component-meta';
+        detail.textContent = item.detail;
+        info.appendChild(name);
+        info.appendChild(detail);
+
+        const price = document.createElement('div');
+        price.className = 'pricing-badge';
+        price.textContent = item.price;
+
+        const link = document.createElement('a');
+        link.className = 'component-link';
+        link.href = item.link;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = 'Affiliate Link';
+
+        const container = document.createElement('div');
+        container.appendChild(price);
+        container.appendChild(link);
+
+        itemEl.appendChild(info);
+        itemEl.appendChild(container);
+        list.appendChild(itemEl);
+      });
+
+      wrapper.appendChild(list);
+      assistantOutput.appendChild(wrapper);
+    }
+
+    function createFallback() {
+      if (!assistantOutput) return;
+      assistantOutput.innerHTML = '<div class="assistant-empty">No exact match found. Here is an ultra-premium starter roadmap you can adapt:</div>';
+      const fallbackPlan = {
+        title: 'Adaptive Premium Launch Roadmap',
+        summary: 'A flexible set of high-margin tools tailored by goal type and budget, ready for immediate purchase.',
+        items: [
+          { name: 'Command Center Laptop', price: '$899', link: 'https://mahutop.link/aff?item=command-laptop', detail: 'Versatile performance for creation or AI workloads.' },
+          { name: 'Elite Productivity Headset', price: '$119', link: 'https://mahutop.link/aff?item=elite-headset', detail: 'Crystal-clear audio for streaming, calls, and recording.' },
+          { name: 'Premium Workflow Subscription', price: '$49/mo', link: 'https://mahutop.link/aff?item=workflow-sub', detail: 'SaaS tools for optimization, planning, and campaign execution.' }
+        ]
+      };
+      renderAssistantPlan(fallbackPlan);
+    }
+
+    function getPlanFromGoal(goalText) {
+      const normalized = (goalText || '').toLowerCase();
+      if (normalized.includes('youtube') || normalized.includes('video')) return assistantPlans[0];
+      if (normalized.includes('arabic') || normalized.includes('nlp') || normalized.includes('language')) return assistantPlans[1];
+      if (normalized.includes('startup') || normalized.includes('budget') || normalized.includes('beginner')) return assistantPlans[2];
+      return null;
+    }
+
+    if (assistantRunButton) {
+      assistantRunButton.addEventListener('click', () => {
+        const goalValue = assistantGoalInput ? assistantGoalInput.value.trim() : '';
+        if (!goalValue) {
+          if (assistantOutput) assistantOutput.innerHTML = '<div class="assistant-empty">Please enter your goal to generate a tailored plan.</div>';
+          return;
+        }
+
+        const plan = getPlanFromGoal(goalValue);
+        if (plan) {
+          renderAssistantPlan(plan);
+        } else {
+          createFallback();
+        }
+      });
+    }
   </script>
 </MainLayout>
 
