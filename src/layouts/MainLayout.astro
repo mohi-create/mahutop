@@ -1,25 +1,309 @@
 ---
-import Navbar from '../components/Navbar.astro';
-const { title = "Sovereign Core System" } = Astro.props;
+const { title = "MAHUTOP SYSTEM CORE" } = Astro.props;
+
+const translations = {
+  en: {
+    brand: "MAHUTOP",
+    home: "HOME_BASE",
+    vault: "SOVEREIGN VAULT",
+    bazaar: "GRAND BAZAAR",
+    logs: "SYSTEM LOGS",
+    vaultPrompt: "ENTER CRITICAL ACCESS KEY:"
+  },
+  ar: {
+    brand: "ماهوتوب",
+    home: "الصفحة الرئيسية",
+    vault: "خزنة السيادة",
+    bazaar: "البازار الكبير",
+    logs: "سجلات النظام",
+    vaultPrompt: "أدخل مفتاح الوصول الحرج:"
+  }
+};
+
+const routeMap = {
+  home: '/',
+  vault: '/vault',
+  bazaar: '/links',
+  logs: '/reviews'
+};
 ---
-<html lang="en">
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Orbitron:wght@400;700;900&family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   </head>
   <body>
-    <Navbar />
-    <slot />
+    <div class="system-shell">
+      <header class="luxury-navbar">
+        <a href="/" class="gemstone-branding" id="site-brand" data-i18n-key="brand">
+          <span class="prism-sparkle">💎</span>
+          <span class="brand-text">{translations.en.brand}</span>
+        </a>
+
+        <nav class="matrix-links">
+          <a href="/" class="matrix-item" data-key="home" data-i18n-key="home">{translations.en.home}</a>
+          <a href="/vault" class="matrix-item" data-key="vault" data-i18n-key="vault">{translations.en.vault}</a>
+          <a href="/links" class="matrix-item" data-key="bazaar" data-i18n-key="bazaar">{translations.en.bazaar}</a>
+          <a href="/reviews" class="matrix-item" data-key="logs" data-i18n-key="logs">{translations.en.logs}</a>
+        </nav>
+
+        <div class="lang-selector-container">
+          <select id="lang-toggle" class="premium-select" aria-label="Language toggle">
+            <option value="en" selected>EN</option>
+            <option value="ar">AR</option>
+          </select>
+        </div>
+      </header>
+
+      <main class="viewport-content">
+        <slot />
+      </main>
+    </div>
+
+    <script>
+      const translations = {
+        en: {
+          brand: "MAHUTOP",
+          home: "HOME_BASE",
+          vault: "SOVEREIGN VAULT",
+          bazaar: "GRAND BAZAAR",
+          logs: "SYSTEM LOGS",
+          vaultPrompt: "ENTER CRITICAL ACCESS KEY:"
+        },
+        ar: {
+          brand: "ماهوتوب",
+          home: "الصفحة الرئيسية",
+          vault: "خزنة السيادة",
+          bazaar: "البازار الكبير",
+          logs: "سجلات النظام",
+          vaultPrompt: "أدخل مفتاح الوصول الحرج:"
+        }
+      };
+
+      const routeMap = {
+        home: '/',
+        vault: '/vault',
+        bazaar: '/links',
+        logs: '/reviews'
+      };
+
+      const storageKey = 'mahutop-lang';
+
+      const getPreferredLang = (): 'en' | 'ar' => {
+        const saved = localStorage.getItem(storageKey);
+        return saved === 'ar' ? 'ar' : 'en';
+      };
+
+      const applyLanguage = (lang: 'en' | 'ar') => {
+        document.documentElement.lang = lang;
+        document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+        document.body.classList.toggle('dir-rtl', lang === 'ar');
+
+        document.querySelectorAll<HTMLElement>('[data-i18n-key]').forEach((node) => {
+          const key = node.dataset.i18nKey as keyof typeof translations['en'] | undefined;
+          if (!key) return;
+          node.textContent = translations[lang]?.[key] ?? node.textContent;
+        });
+
+        document.querySelectorAll<HTMLElement>('[data-key]').forEach((node) => {
+          const key = node.dataset.key as keyof typeof routeMap | undefined;
+          if (!key) return;
+          const target = routeMap[key];
+          if (target) node.setAttribute('href', target);
+        });
+      };
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const toggle = document.getElementById('lang-toggle') as HTMLSelectElement | null;
+        const activeLang = getPreferredLang();
+
+        if (toggle) {
+          toggle.value = activeLang;
+        }
+
+        applyLanguage(activeLang);
+
+        document.body.addEventListener('click', (event: MouseEvent) => {
+          const anchor = (event.target as HTMLElement | null)?.closest('a') as HTMLAnchorElement | null;
+          if (!anchor) return;
+          const href = anchor.getAttribute('href');
+          if (!href || href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('#')) return;
+
+          const key = anchor.dataset.key as keyof typeof routeMap | undefined;
+          if (key && routeMap[key]) {
+            anchor.setAttribute('href', routeMap[key]);
+          } else if (!Object.values(routeMap).includes(href)) {
+            anchor.setAttribute('href', routeMap.home);
+          }
+        }, true);
+
+        if (toggle) {
+          toggle.addEventListener('change', (event) => {
+            const selected = (event.target as HTMLSelectElement).value === 'ar' ? 'ar' : 'en';
+            localStorage.setItem(storageKey, selected);
+            applyLanguage(selected);
+          });
+        }
+      });
+    </script>
+
+    <style is:global>
+      :root {
+        color-scheme: dark;
+        font-family: 'Inter', system-ui, sans-serif;
+      }
+      html,
+      body {
+        min-height: 100%;
+        margin: 0;
+        padding: 0;
+        background: radial-gradient(circle at top left, rgba(88, 166, 255, 0.18), transparent 32%),
+          radial-gradient(circle at bottom right, rgba(80, 250, 123, 0.12), transparent 24%),
+          linear-gradient(180deg, #050507 0%, #090b11 42%, #050507 100%);
+      }
+      body {
+        color: #e5e7eb;
+        overflow-x: hidden;
+      }
+      .system-shell {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      .luxury-navbar {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1rem 1.5rem;
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: rgba(3, 5, 9, 0.82);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(20px);
+      }
+      .gemstone-branding {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        text-decoration: none;
+        color: #ffffff;
+        font-family: 'Cinzel', serif;
+        font-size: 1.15rem;
+        font-weight: 900;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        position: relative;
+        padding: 0.75rem 1rem;
+        border-radius: 999px;
+      }
+      .gemstone-branding::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        background: linear-gradient(120deg, #58a6ff, #ff79c6, #50fa7b);
+        opacity: 0.18;
+        filter: blur(20px);
+        transform: scale(1.08);
+        animation: gemstone-glow 6s infinite alternate ease-in-out;
+        pointer-events: none;
+      }
+      .prism-sparkle {
+        position: relative;
+        z-index: 1;
+        animation: sparkle-shift 2.5s infinite ease-in-out;
+      }
+      .brand-text {
+        position: relative;
+        z-index: 1;
+      }
+      .matrix-links {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+      .matrix-item {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.85rem 1.25rem;
+        border-radius: 999px;
+        text-decoration: none;
+        color: #cbd5e1;
+        background: rgba(15, 23, 42, 0.42);
+        border: 1px solid rgba(148, 163, 184, 0.12);
+        font-family: 'Orbitron', sans-serif;
+        font-size: 0.82rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        transition: all 0.24s ease;
+      }
+      .matrix-item:hover {
+        color: #ffffff;
+        background: rgba(88, 166, 255, 0.14);
+        border-color: rgba(88, 166, 255, 0.28);
+        transform: translateY(-1px);
+      }
+      .lang-selector-container {
+        display: flex;
+        align-items: center;
+      }
+      .premium-select {
+        min-width: 96px;
+        padding: 0.85rem 1rem;
+        border-radius: 999px;
+        border: 1px solid rgba(88, 166, 255, 0.28);
+        background: rgba(7, 11, 16, 0.95);
+        color: #f8fafc;
+        font-family: 'Orbitron', sans-serif;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        cursor: pointer;
+        outline: none;
+      }
+      .premium-select:focus {
+        box-shadow: 0 0 0 4px rgba(88, 166, 255, 0.14);
+      }
+      .viewport-content {
+        flex: 1;
+        width: min(1160px, calc(100% - 3rem));
+        margin: 2rem auto 3rem;
+        padding: 2.5rem;
+        border-radius: 38px;
+        background: rgba(6, 10, 18, 0.92);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        box-shadow: 0 40px 120px rgba(5, 8, 16, 0.54);
+        backdrop-filter: blur(18px);
+        min-height: calc(100vh - 210px);
+      }
+      .dir-rtl {
+        direction: rtl;
+        font-family: 'Cairo', 'Segoe UI', sans-serif;
+      }
+      .dir-rtl .luxury-navbar {
+        direction: rtl;
+      }
+      .dir-rtl .matrix-links {
+        justify-content: flex-end;
+      }
+      @keyframes gemstone-glow {
+        0% { transform: scale(1.03) rotate(0deg); opacity: 0.18; }
+        100% { transform: scale(1.1) rotate(2deg); opacity: 0.3; }
+      }
+      @keyframes sparkle-shift {
+        0%, 100% { transform: translateX(0); }
+        50% { transform: translateX(2px); }
+      }
+    </style>
   </body>
 </html>
-
-<style is:global>
-  body {
-    background-color: #0d1117;
-    color: #c9d1d9;
-    font-family: monospace;
-    margin: 0;
-    padding: 0;
-  }
-</style>
