@@ -1,138 +1,127 @@
----
+﻿---
 import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
 ---
 
-<Layout title="HARDWARE//HUB">
-  <main class="hero-container">
-    <div class="glitch-wrapper">
-      <h1 class="hero-title" data-text="HARDWARE//HUB">HARDWARE//HUB</h1>
-    </div>
-    
-    <p class="hero-subtitle">
-      A curated index of wearable electronics, intricate PCB design, and bespoke maker hardware.
-    </p>
+<Layout title="SOVEREIGN SYSTEM CORE">
+  <Navbar />
 
-    <div class="action-row">
-      <a href="/reviews" class="btn-primary">
-        <span>Explore Reviews</span>
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+  <main class="dashboard-hub">
+    <section class="dashboard-intro">
+      <h1>SOVEREIGN SYSTEM CORE // MAIN_MENU</h1>
+      <div class="diagnostics-card">
+        <p>SYSTEM OPERATIONAL // LATENCY 0ms // MODULES FULLY DEPLOYED</p>
+      </div>
+    </section>
+
+    <section class="launch-grid">
+      <a class="launch-card" href="/vault">
+        <h2>LAUNCH VAULT ENGINE</h2>
+        <p>Execute Arabic character normalization, text diacritic stripping, and bulk text, PDF, or Word document processing rules.</p>
       </a>
-    </div>
 
-    <div class="status-bar">
-      <div class="status-item">
-        <span class="indicator green"></span>
-        <span class="status-text">CORE.SYS: ACTIVE</span>
-      </div>
-      <div class="status-item">
-        <span class="indicator gold"></span>
-        <span class="status-text">REVIEWS.DB: 2 ENTRIES LOADED</span>
-      </div>
-    </div>
+      <a class="launch-card" href="/reviews">
+        <h2>ACCESS REVIEWS DATABASE</h2>
+        <p>Browse encrypted local file logs, development audits, and markdown system documentation.</p>
+      </a>
+    </section>
   </main>
 </Layout>
 
 <style>
-  .hero-container {
-    max-width: 800px;
-    margin: auto;
-    padding: 8rem 2rem;
-    text-align: center;
+  :global(body) {
+    margin: 0;
+    min-height: 100vh;
+    background: #0d1117;
+    color: #c9d1d9;
+    font-family: ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+  }
+
+  .dashboard-hub {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem 2rem 5rem;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 70vh;
+    gap: 2.5rem;
   }
 
-  .hero-title {
-    font-size: 3.5rem;
-    font-weight: 800;
+  .dashboard-intro {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .dashboard-intro h1 {
+    font-size: clamp(2rem, 3vw, 3.5rem);
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: #fff;
-    margin-bottom: 1.5rem;
-    position: relative;
+    margin: 0;
+    color: #c9d1d9;
   }
 
-  .hero-subtitle {
-    font-size: 1.1rem;
-    line-height: 1.8;
-    color: rgba(255, 255, 255, 0.5);
-    max-width: 540px;
-    margin-bottom: 3rem;
-    font-weight: 300;
-    letter-spacing: 0.02em;
+  .diagnostics-card {
+    border: 1px solid #30363d;
+    padding: 1.5rem 1.75rem;
+    border-radius: 14px;
+    background: rgba(17, 24, 39, 0.75);
+    box-shadow: 0 0 0 1px rgba(56, 139, 253, 0.06);
   }
 
-  /* Premium Hover Button */
-  .btn-primary {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.75rem;
-    text-decoration: none;
-    color: #050505;
-    background: #fff;
-    padding: 1rem 2rem;
-    border-radius: 8px;
-    font-weight: 600;
+  .diagnostics-card p {
+    margin: 0;
     font-size: 0.95rem;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease, box-shadow 0.3s ease;
   }
 
-  .btn-primary svg {
-    transition: transform 0.3s ease;
+  .launch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
   }
 
-  .btn-primary:hover {
+  .launch-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    text-decoration: none;
+    border: 1px solid #30363d;
+    padding: 1.75rem;
+    border-radius: 16px;
+    background: rgba(12, 17, 23, 0.96);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+    color: #c9d1d9;
+  }
+
+  .launch-card h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .launch-card p {
+    margin: 0;
+    line-height: 1.75;
+    color: #8b949e;
+  }
+
+  .launch-card:hover,
+  .launch-card:focus-visible {
     transform: translateY(-2px);
-    background: #d4af37; /* Shifts into ENIG Gold on hover */
-    box-shadow: 0 10px 30px rgba(212, 175, 55, 0.2);
+    border-color: #58a6ff;
+    box-shadow: 0 0 35px rgba(88, 166, 255, 0.25);
+    color: #58a6ff;
   }
 
-  .btn-primary:hover svg {
-    transform: translateX(4px); /* Arrow subtly glides right */
+  .launch-card:hover h2,
+  .launch-card:focus-visible h2 {
+    color: #58a6ff;
   }
 
-  /* Status Bar details */
-  .status-bar {
-    margin-top: 6rem;
-    display: flex;
-    gap: 3rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.03);
-    padding-top: 2rem;
-    width: 100%;
-    justify-content: center;
-  }
-
-  .status-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .indicator {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-  }
-
-  .indicator.green {
-    background: #00ff66;
-    box-shadow: 0 0 8px #00ff66;
-  }
-
-  .indicator.gold {
-    background: #d4af37;
-    box-shadow: 0 0 8px #d4af37;
-  }
-
-  .status-text {
-    font-size: 0.75rem;
-    font-family: monospace;
-    opacity: 0.3;
-    letter-spacing: 0.1em;
+  .launch-card:hover p,
+  .launch-card:focus-visible p {
+    color: #c9d1d9;
   }
 </style>
