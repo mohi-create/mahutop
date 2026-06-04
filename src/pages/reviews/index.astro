@@ -16,11 +16,11 @@ const reviews = Object.values(posts);
     </header>
 
     <section class="logs-grid" aria-label="Review logs database">
-      {reviews.map(review => (
+      {reviews.map((review: any) => (
         <a class="log-row" href={review.url}>
-          <span class="row-title">{review.frontmatter.title}</span>
-          <span class="row-date">{review.frontmatter.date}</span>
-          <span class="row-description">{review.frontmatter.description}</span>
+          <span class="row-title">{review.frontmatter?.title}</span>
+          <span class="row-date">{review.frontmatter?.date}</span>
+          <span class="row-description">{review.frontmatter?.description}</span>
         </a>
       ))}
     </section>
