@@ -2,6 +2,11 @@
 import VaultLayout from '../layouts/VaultLayout.astro';
 ---
 
+<head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+</head>
+
 <VaultLayout title='Sovereign Secret Vault'>
   <style is:global>
     /* Premium Terminal Output Styling */
@@ -94,6 +99,13 @@ import VaultLayout from '../layouts/VaultLayout.astro';
           <label class='block text-xs font-mono text-emerald-500/80 uppercase tracking-widest font-semibold mb-3'>
             Raw Input Text / Key-Phrases
           </label>
+          <input type='file' id='bulk-file-input' accept='.txt,.pdf,.docx' style='display: none;' />
+          <div
+            id='drop-zone'
+            class='mt-2 mb-4 rounded-xl border-2 border-dashed border-[#30363d] bg-slate-950/60 text-slate-400 text-sm font-mono leading-relaxed px-4 py-6 cursor-pointer transition-colors duration-200'
+          >
+            Drag & Drop an Arabic .txt, .pdf, or .docx file here or Click to Browse
+          </div>
           <textarea 
             id='input-textarea'
             rows='6' 
@@ -231,6 +243,130 @@ import VaultLayout from '../layouts/VaultLayout.astro';
       });
     }
 
+    /** @type {HTMLInputElement | null} */
+    const fileInput = document.getElementById('bulk-file-input');
+    /** @type {HTMLDivElement | null} */
+    const dropZone = document.getElementById('drop-zone');
+
+    function normalizeText(raw) {
+      var hasAlif = /[أإآ]/.test(raw);
+      var hasYa = /ى/.test(raw);
+      var hasTa = /ة/.test(raw);
+      var hasDiacritics = /[\u064B-\u0652]/.test(raw);
+
+      var text = raw.replace(/[أإآ]/g, 'ا');
+      text = text.replace(/ى/g, 'ي');
+      text = text.replace(/ة/g, 'ه');
+      text = text.replace(/[\u064B-\u0652]/g, '');
+      text = text.replace(/ +/g, ' ').replace(/\n\s*\n+/g, '\n').trim();
+
+      if (outputContainer) outputContainer.textContent = text || 'Your normalized text will appear here...';
+      updateBadge(badgeAlif, hasAlif);
+      updateBadge(badgeYa, hasYa);
+      updateBadge(badgeTa, hasTa);
+      updateBadge(badgeDiacritics, hasDiacritics);
+
+      var inputLen = raw.length;
+      var outputLen = text.length;
+      if (charStats) charStats.textContent = 'Input: ' + inputLen + ' chars | Output: ' + outputLen + ' chars';
+    }
+
+    function refreshFromTextArea() {
+      if (!inputTextArea) return;
+      normalizeText(inputTextArea.value || '');
+    }
+
+    function handleFile(file) {
+      if (!file || !inputTextArea) return;
+      var extension = file.name.split('.').pop().toLowerCase();
+      var isTxt = extension === 'txt' || file.type === 'text/plain';
+      var isDocx = extension === 'docx' || file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+      var isPdf = extension === 'pdf' || file.type === 'application/pdf';
+
+      function loadText(text) {
+        inputTextArea.value = text || '';
+        refreshFromTextArea();
+      }
+
+      if (isTxt) {
+        var reader = new FileReader();
+        reader.onload = function (event) {
+          loadText(event.target?.result || '');
+        };
+        reader.readAsText(file, 'UTF-8');
+        return;
+      }
+
+      if (isDocx) {
+        var readerDocx = new FileReader();
+        readerDocx.onload = function (event) {
+          var arrayBuffer = event.target?.result;
+          if (!arrayBuffer || !window.mammoth) return;
+          window.mammoth.extractRawText({ arrayBuffer: arrayBuffer }).then(function (result) {
+            loadText(result.value || '');
+          }).catch(function (error) {
+            console.error('DOCX parse error', error);
+          });
+        };
+        readerDocx.readAsArrayBuffer(file);
+        return;
+      }
+
+      if (isPdf) {
+        var readerPdf = new FileReader();
+        readerPdf.onload = function (event) {
+          var arrayBuffer = event.target?.result;
+          var pdfjsLib = window.pdfjsLib || window['pdfjsLib'];
+          if (!arrayBuffer || !pdfjsLib) return;
+          pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+          pdfjsLib.getDocument({ data: arrayBuffer }).promise.then(async function (pdf) {
+            var pageTexts = [];
+            for (var pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
+              var page = await pdf.getPage(pageNumber);
+              var textContent = await page.getTextContent();
+              var pageText = textContent.items.map(function (item) { return item.str || ''; }).join(' ');
+              pageTexts.push(pageText);
+            }
+            loadText(pageTexts.join('\n\n'));
+          }).catch(function (error) {
+            console.error('PDF parse error', error);
+          });
+        };
+        readerPdf.readAsArrayBuffer(file);
+        return;
+      }
+
+      console.warn('Unsupported file type:', file.name, file.type);
+    }
+
+    if (dropZone && fileInput) {
+      dropZone.addEventListener('click', function () {
+        fileInput.click();
+      });
+
+      dropZone.addEventListener('dragover', function (event) {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = 'copy';
+        dropZone.classList.add('dragover');
+      });
+
+      dropZone.addEventListener('dragleave', function () {
+        dropZone.classList.remove('dragover');
+      });
+
+      dropZone.addEventListener('drop', function (event) {
+        event.preventDefault();
+        dropZone.classList.remove('dragover');
+        var file = event.dataTransfer.files[0];
+        handleFile(file);
+      });
+
+      fileInput.addEventListener('change', function () {
+        if (!fileInput.files || !fileInput.files.length) return;
+        handleFile(fileInput.files[0]);
+      });
+    }
+
     if (copyButton) {
       copyButton.addEventListener('click', function () {
         var text = outputContainer ? outputContainer.textContent || '' : '';
@@ -247,6 +383,7 @@ import VaultLayout from '../layouts/VaultLayout.astro';
 
     if (clearButton) {
       clearButton.addEventListener('click', function () {
+        if (fileInput) fileInput.value = '';
         resetUI();
       });
     }
@@ -290,6 +427,24 @@ import VaultLayout from '../layouts/VaultLayout.astro';
   button:hover {
     background-color: #30363d !important;
     border-color: #8b949e !important;
+  }
+
+  #drop-zone {
+    border: 2px dashed #30363d;
+    color: #8b949e;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    background-color: #0d1117;
+    border-radius: 1rem;
+    padding: 1.25rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  }
+
+  #drop-zone:hover,
+  #drop-zone.dragover {
+    border-color: #58a6ff;
+    box-shadow: 0 0 0 1px rgba(88, 166, 255, 0.18);
   }
 
   /* Dashboard Badges Styling */
