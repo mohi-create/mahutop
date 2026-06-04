@@ -7,7 +7,7 @@ const translations = {
     home: "HOME_BASE",
     vault: "SOVEREIGN VAULT",
     bazaar: "GRAND BAZAAR",
-    logs: "SYSTEM LOGS",
+    logs: "SYSTEM LOGS // REVIEWS_DATABASE",
     vaultPrompt: "ENTER CRITICAL ACCESS KEY:",
     reviewsSub: "Encrypted review logs, ready for audit and deeper analysis."
   },
@@ -16,7 +16,7 @@ const translations = {
     home: "الصفحة الرئيسية",
     vault: "خزنة السيادة",
     bazaar: "البازار الكبير",
-    logs: "سجلات النظام",
+    logs: "سجلات النظام // قاعدة بيانات المراجعات",
     vaultPrompt: "أدخل مفتاح الوصول الحرج:",
     reviewsSub: "سجلات المراجعة المشفرة، جاهزة للتدقيق والتحليل العميق."
   }
@@ -80,23 +80,20 @@ const routeMap = {
           home: "HOME_BASE",
           vault: "SOVEREIGN VAULT",
           bazaar: "GRAND BAZAAR",
-          logs: "SYSTEM LOGS"
-          ,reviewsSub: "Encrypted review logs, ready for audit and deeper analysis."
+          logs: "SYSTEM LOGS // REVIEWS_DATABASE",
+          reviewsSub: "Encrypted review logs, ready for audit and deeper analysis."
         },
         ar: {
           brand: "ماهوتوب",
           home: "الصفحة الرئيسية",
           vault: "خزنة السيادة",
           bazaar: "البازار الكبير",
-          logs: "سجلات النظام"
-          ,reviewsSub: "سجلات المراجعة المشفرة، جاهزة للتدقيق والتحليل العميق."
+          logs: "سجلات النظام // قاعدة بيانات المراجعات",
+          reviewsSub: "سجلات المراجعة المشفرة، جاهزة للتدقيق والتحليل العميق."
         }
       };
 
-      document.addEventListener('DOMContentLoaded', () => {
-        const langToggle = document.getElementById('lang-toggle') as HTMLSelectElement | null;
-        
-        function applyTranslations(lang: 'en' | 'ar') {
+      function applyTranslations(lang: 'en' | 'ar') {
           // Safely switch document direction matrix
           document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
           document.documentElement.lang = lang;
