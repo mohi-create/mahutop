@@ -148,6 +148,7 @@ import VaultLayout from '../layouts/VaultLayout.astro';
             </div>
 
             <button id='copy-button' class='ml-2 bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-slate-100 px-3 py-1.5 rounded-lg font-mono text-xs font-semibold transition-all duration-150 border border-slate-700'>Copy</button>
+            <button id='download-file-btn' class='ml-2 bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-slate-100 px-3 py-1.5 rounded-lg font-mono text-xs font-semibold transition-all duration-150 border border-slate-700'>Download Cleaned File</button>
           </div>
         </div>
       </div>
@@ -182,6 +183,8 @@ import VaultLayout from '../layouts/VaultLayout.astro';
     const normalizeButton = /** @type {HTMLButtonElement | null} */ (document.getElementById('normalize-button'));
     /** @type {HTMLButtonElement | null} */
     const clearButton = /** @type {HTMLButtonElement | null} */ (document.getElementById('clear-terminal'));
+    /** @type {HTMLButtonElement | null} */
+    const downloadButton = /** @type {HTMLButtonElement | null} */ (document.getElementById('download-file-btn'));
 
     /**
      * Update a badge element's active state.
@@ -202,6 +205,16 @@ import VaultLayout from '../layouts/VaultLayout.astro';
     /**
      * Reset UI to default state.
      */
+    function updateDownloadButtonState() {
+      if (!downloadButton || !outputContainer) return;
+      var outputText = (outputContainer.textContent || '').trim();
+      var isPlaceholder = outputText === 'Your normalized text will appear here...';
+      var hasNormalizedText = outputText && !isPlaceholder;
+      downloadButton.disabled = !hasNormalizedText;
+      downloadButton.classList.toggle('opacity-50', !hasNormalizedText);
+      downloadButton.classList.toggle('cursor-not-allowed', !hasNormalizedText);
+    }
+
     function resetUI() {
       if (inputTextArea) inputTextArea.value = '';
       if (outputContainer) outputContainer.textContent = 'Your normalized text will appear here...';
@@ -210,6 +223,7 @@ import VaultLayout from '../layouts/VaultLayout.astro';
       updateBadge(badgeYa, false);
       updateBadge(badgeTa, false);
       updateBadge(badgeDiacritics, false);
+      updateDownloadButtonState();
     }
 
     // Initialize UI
@@ -240,6 +254,7 @@ import VaultLayout from '../layouts/VaultLayout.astro';
         var inputLen = raw.length;
         var outputLen = text.length;
         if (charStats) charStats.textContent = "Input: " + inputLen + " chars | Output: " + outputLen + " chars";
+        updateDownloadButtonState();
       });
     }
 
@@ -265,6 +280,7 @@ import VaultLayout from '../layouts/VaultLayout.astro';
       updateBadge(badgeYa, hasYa);
       updateBadge(badgeTa, hasTa);
       updateBadge(badgeDiacritics, hasDiacritics);
+      updateDownloadButtonState();
 
       var inputLen = raw.length;
       var outputLen = text.length;
@@ -381,6 +397,25 @@ import VaultLayout from '../layouts/VaultLayout.astro';
       });
     }
 
+    if (downloadButton) {
+      downloadButton.addEventListener('click', function () {
+        if (!outputContainer) return;
+        var text = (outputContainer.textContent || '').trim();
+        if (!text || text === 'Your normalized text will appear here...') return;
+
+        var blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+        var url = URL.createObjectURL(blob);
+        var anchor = document.createElement('a');
+        anchor.href = url;
+        anchor.download = 'normalized_output.txt';
+        anchor.style.display = 'none';
+        document.body.appendChild(anchor);
+        anchor.click();
+        document.body.removeChild(anchor);
+        URL.revokeObjectURL(url);
+      });
+    }
+
     if (clearButton) {
       clearButton.addEventListener('click', function () {
         if (fileInput) fileInput.value = '';
@@ -475,5 +510,20 @@ import VaultLayout from '../layouts/VaultLayout.astro';
     padding: 12px;
     font-family: monospace;
     color: #79c0ff;
+  }
+
+  #download-file-btn {
+    color: #2ea44f !important;
+    border-color: #238636 !important;
+    background-color: rgba(46, 164, 79, 0.08) !important;
+  }
+
+  #download-file-btn:hover {
+    background-color: rgba(46, 164, 79, 0.16) !important;
+  }
+
+  #download-file-btn:disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
   }
 </style>
