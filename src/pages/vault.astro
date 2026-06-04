@@ -114,6 +114,46 @@ import VaultLayout from '../layouts/VaultLayout.astro';
       font-family: monospace;
     }
 
+    #system-terminal-log {
+      font-size: 0.85rem;
+      background: #161b22;
+      border-top: 1px solid #30363d;
+      border-bottom: 1px solid #30363d;
+      color: #c9d1d9;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+      padding: 0.85rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin: 1rem 0 0;
+      border-radius: 0.75rem;
+    }
+
+    .status-indicator {
+      display: inline-flex;
+      width: 0.85rem;
+      height: 0.85rem;
+      align-items: center;
+      justify-content: center;
+      color: #8b949e;
+      text-shadow: 0 0 4px rgba(88, 166, 255, 0.2);
+    }
+
+    .status-indicator.success {
+      color: #7ee787;
+      text-shadow: 0 0 12px rgba(126, 231, 135, 0.75);
+    }
+
+    .status-indicator.alert {
+      color: #f97316;
+      text-shadow: 0 0 12px rgba(249, 115, 22, 0.6);
+    }
+
+    .status-indicator.error {
+      color: #f85149;
+      text-shadow: 0 0 12px rgba(248, 81, 73, 0.8);
+    }
+
     .control-panel label {
       display: flex;
       align-items: center;
@@ -236,6 +276,11 @@ import VaultLayout from '../layouts/VaultLayout.astro';
           </button>
         </div>
 
+        <div id='system-terminal-log'>
+          <span class='status-indicator alert'>●</span>
+          <span id='terminal-message'>SYSTEM STANDBY // READY TO PROCESS ENGINE LOGS</span>
+        </div>
+
         <!-- Output Terminal Container -->
         <div id='output-results' class='output-container mt-6 p-5 rounded-lg border border-emerald-500/30 bg-slate-950 text-slate-200 font-mono text-sm min-h-[8rem] max-h-[16rem] overflow-y-auto shadow-inner ring-1 ring-slate-800/50'>
           <!-- Phase 2 engine output goes here -->
@@ -339,6 +384,7 @@ import VaultLayout from '../layouts/VaultLayout.astro';
       updateBadge(badgeTa, false);
       updateBadge(badgeDiacritics, false);
       updateDownloadButtonState();
+      setTerminalStatus('SYSTEM STANDBY // READY TO PROCESS ENGINE LOGS', 'alert');
     }
 
     // Initialize UI
@@ -405,8 +451,75 @@ import VaultLayout from '../layouts/VaultLayout.astro';
 
     if (normalizeButton && inputTextArea && outputContainer) {
       normalizeButton.addEventListener('click', function () {
-        var raw = inputTextArea.value || '';
+        try {
+          var raw = inputTextArea.value || '';
 
+          var hasAlif = /[أإآ]/.test(raw);
+          var hasYa = /ى/.test(raw);
+          var hasTa = /ة/.test(raw);
+          var hasDiacritics = /[\u064B-\u0652]/.test(raw);
+
+          var text = raw;
+          if (document.getElementById('toggle-alif').checked) {
+            text = text.replace(/[أإآ]/g, 'ا');
+          }
+          if (document.getElementById('toggle-ya').checked) {
+            text = text.replace(/ى/g, 'ي');
+          }
+          if (document.getElementById('toggle-ta').checked) {
+            text = text.replace(/ة/g, 'ه');
+          }
+          if (document.getElementById('toggle-tashkeel').checked) {
+            text = text.replace(/[\u064B-\u0652]/g, '');
+          }
+          text = text.replace(/ +/g, ' ').replace(/\n\s*\n+/g, '\n').trim();
+
+          outputContainer.textContent = text || 'Your normalized text will appear here...';
+
+          updateBadge(badgeAlif, hasAlif);
+          updateBadge(badgeYa, hasYa);
+          updateBadge(badgeTa, hasTa);
+          updateBadge(badgeDiacritics, hasDiacritics);
+
+          var inputLen = raw.length;
+          var outputLen = text.length;
+          if (charStats) charStats.textContent = "Input: " + inputLen + " chars | Output: " + outputLen + " chars";
+          updateDownloadButtonState();
+
+          // Trigger frequency analysis on successful normalization
+          analyzeFrequency(text);
+          setTerminalStatus('NORMALIZATION COMPLETE // OUTPUT STABLE', 'success');
+        } catch (error) {
+          reportTerminalError(error);
+          outputContainer.textContent = 'Normalization failed. See terminal status for details.';
+        }
+      });
+    }
+
+    /** @type {HTMLInputElement | null} */
+    const fileInput = document.getElementById('bulk-file-input');
+    /** @type {HTMLDivElement | null} */
+    const dropZone = document.getElementById('drop-zone');
+    /** @type {HTMLElement | null} */
+    const terminalStatusIndicator = document.querySelector('#system-terminal-log .status-indicator');
+    /** @type {HTMLElement | null} */
+    const terminalMessage = document.getElementById('terminal-message');
+
+    function setTerminalStatus(message, state) {
+      if (terminalMessage) terminalMessage.textContent = message;
+      if (!terminalStatusIndicator) return;
+      terminalStatusIndicator.classList.remove('success', 'alert', 'error');
+      terminalStatusIndicator.classList.add(state || 'alert');
+    }
+
+    function reportTerminalError(error) {
+      var message = 'ERROR // ' + (error && error.message ? error.message : String(error));
+      setTerminalStatus(message, 'error');
+      console.error(message, error);
+    }
+
+    function normalizeText(raw) {
+      try {
         var hasAlif = /[أإآ]/.test(raw);
         var hasYa = /ى/.test(raw);
         var hasTa = /ة/.test(raw);
@@ -427,59 +540,21 @@ import VaultLayout from '../layouts/VaultLayout.astro';
         }
         text = text.replace(/ +/g, ' ').replace(/\n\s*\n+/g, '\n').trim();
 
-        outputContainer.textContent = text || 'Your normalized text will appear here...';
-
+        if (outputContainer) outputContainer.textContent = text || 'Your normalized text will appear here...';
         updateBadge(badgeAlif, hasAlif);
         updateBadge(badgeYa, hasYa);
         updateBadge(badgeTa, hasTa);
         updateBadge(badgeDiacritics, hasDiacritics);
+        updateDownloadButtonState();
 
         var inputLen = raw.length;
         var outputLen = text.length;
-        if (charStats) charStats.textContent = "Input: " + inputLen + " chars | Output: " + outputLen + " chars";
-        updateDownloadButtonState();
-
-        // Trigger frequency analysis on successful normalization
-        analyzeFrequency(text);
-      });
-    }
-
-    /** @type {HTMLInputElement | null} */
-    const fileInput = document.getElementById('bulk-file-input');
-    /** @type {HTMLDivElement | null} */
-    const dropZone = document.getElementById('drop-zone');
-
-    function normalizeText(raw) {
-      var hasAlif = /[أإآ]/.test(raw);
-      var hasYa = /ى/.test(raw);
-      var hasTa = /ة/.test(raw);
-      var hasDiacritics = /[\u064B-\u0652]/.test(raw);
-
-      var text = raw;
-      if (document.getElementById('toggle-alif').checked) {
-        text = text.replace(/[أإآ]/g, 'ا');
+        if (charStats) charStats.textContent = 'Input: ' + inputLen + ' chars | Output: ' + outputLen + ' chars';
+        setTerminalStatus('NORMALIZATION COMPLETE // OUTPUT STABLE', 'success');
+      } catch (error) {
+        reportTerminalError(error);
+        if (outputContainer) outputContainer.textContent = 'Normalization failed. See terminal status for details.';
       }
-      if (document.getElementById('toggle-ya').checked) {
-        text = text.replace(/ى/g, 'ي');
-      }
-      if (document.getElementById('toggle-ta').checked) {
-        text = text.replace(/ة/g, 'ه');
-      }
-      if (document.getElementById('toggle-tashkeel').checked) {
-        text = text.replace(/[\u064B-\u0652]/g, '');
-      }
-      text = text.replace(/ +/g, ' ').replace(/\n\s*\n+/g, '\n').trim();
-
-      if (outputContainer) outputContainer.textContent = text || 'Your normalized text will appear here...';
-      updateBadge(badgeAlif, hasAlif);
-      updateBadge(badgeYa, hasYa);
-      updateBadge(badgeTa, hasTa);
-      updateBadge(badgeDiacritics, hasDiacritics);
-      updateDownloadButtonState();
-
-      var inputLen = raw.length;
-      var outputLen = text.length;
-      if (charStats) charStats.textContent = 'Input: ' + inputLen + ' chars | Output: ' + outputLen + ' chars';
     }
 
     function refreshFromTextArea() {
@@ -503,7 +578,15 @@ import VaultLayout from '../layouts/VaultLayout.astro';
       if (isTxt) {
         var reader = new FileReader();
         reader.onload = function (event) {
-          loadText(event.target?.result || '');
+          try {
+            loadText(event.target?.result || '');
+            setTerminalStatus('FILE IMPORTED // TEXT READ', 'success');
+          } catch (error) {
+            reportTerminalError(error);
+          }
+        };
+        reader.onerror = function (event) {
+          reportTerminalError(new Error('Text file read failed'));
         };
         reader.readAsText(file, 'UTF-8');
         return;
@@ -516,8 +599,9 @@ import VaultLayout from '../layouts/VaultLayout.astro';
           if (!arrayBuffer || !window.mammoth) return;
           window.mammoth.extractRawText({ arrayBuffer: arrayBuffer }).then(function (result) {
             loadText(result.value || '');
+            setTerminalStatus('FILE IMPORTED // DOCX PARSED', 'success');
           }).catch(function (error) {
-            console.error('DOCX parse error', error);
+            reportTerminalError(error);
           });
         };
         readerDocx.readAsArrayBuffer(file);
@@ -540,8 +624,9 @@ import VaultLayout from '../layouts/VaultLayout.astro';
               pageTexts.push(pageText);
             }
             loadText(pageTexts.join('\n\n'));
+            setTerminalStatus('FILE IMPORTED // PDF PARSED', 'success');
           }).catch(function (error) {
-            console.error('PDF parse error', error);
+            reportTerminalError(error);
           });
         };
         readerPdf.readAsArrayBuffer(file);
