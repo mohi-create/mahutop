@@ -1,14 +1,12 @@
----
 import Navbar from '../components/Navbar.astro';
-import VaultLayout from '../layouts/VaultLayout.astro';
----
+import MainLayout from '../layouts/MainLayout.astro';
 
 <head>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 </head>
 
-<VaultLayout title='Sovereign Secret Vault'>
+<MainLayout title="Sovereign Vault">
   <Navbar />
   <style is:global>
     /* Premium Terminal Output Styling */
@@ -324,7 +322,7 @@ import VaultLayout from '../layouts/VaultLayout.astro';
     </div>
 
   </div>
-</VaultLayout>
+</MainLayout>
 
 <script is:inline>
   // Self-contained secure access validation engine

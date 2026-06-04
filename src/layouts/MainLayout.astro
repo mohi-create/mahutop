@@ -65,6 +65,7 @@ const routeMap = {
     </div>
 
     <script>
+      // Client-side translation handler: updates all nested elements
       const translations = {
         en: {
           brand: "MAHUTOP",
@@ -93,47 +94,75 @@ const routeMap = {
 
       const storageKey = 'mahutop-lang';
 
-      const getPreferredLang = (): 'en' | 'ar' => {
+      const getPreferredLang = () => {
         const saved = localStorage.getItem(storageKey);
         return saved === 'ar' ? 'ar' : 'en';
       };
 
-      const applyLanguage = (lang: 'en' | 'ar') => {
+      const applyLanguage = (lang) => {
         document.documentElement.lang = lang;
         document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
         document.body.classList.toggle('dir-rtl', lang === 'ar');
 
-        document.querySelectorAll<HTMLElement>('[data-i18n-key]').forEach((node) => {
-          const key = node.dataset.i18nKey as keyof typeof translations['en'] | undefined;
+        // Update textual content for any element that opts in via data-i18n-key
+        document.querySelectorAll('[data-i18n-key]').forEach((node) => {
+          const key = node.dataset.i18nKey;
           if (!key) return;
-          node.textContent = translations[lang]?.[key] ?? node.textContent;
+
+          const term = translations[lang] && translations[lang][key] ? translations[lang][key] : null;
+          if (term !== null) {
+            // If element is an input/button that uses value
+            if (node instanceof HTMLInputElement || node instanceof HTMLButtonElement) {
+              if (node.hasAttribute('value')) node.value = term;
+              else node.textContent = term;
+            } else if (node instanceof HTMLTextAreaElement) {
+              if (node.hasAttribute('placeholder')) node.placeholder = term;
+              else node.textContent = term;
+            } else {
+              node.textContent = term;
+            }
+          }
+
+          // If translations include attribute-specific variants like key_placeholder
+          // allow placeholders and titles to be updated as well
+          const placeholderKey = `${key}_placeholder`;
+          if (translations[lang] && translations[lang][placeholderKey]) {
+            try { node.setAttribute('placeholder', translations[lang][placeholderKey]); } catch (e) {}
+          }
+
+          const titleKey = `${key}_title`;
+          if (translations[lang] && translations[lang][titleKey]) {
+            try { node.setAttribute('title', translations[lang][titleKey]); } catch (e) {}
+          }
         });
 
-        document.querySelectorAll<HTMLElement>('[data-key]').forEach((node) => {
-          const key = node.dataset.key as keyof typeof routeMap | undefined;
+        // Update hrefs for elements that declare a data-key mapping
+        document.querySelectorAll('[data-key]').forEach((node) => {
+          const key = node.dataset.key;
           if (!key) return;
           const target = routeMap[key];
-          if (target) node.setAttribute('href', target);
+          if (target && node instanceof HTMLElement) {
+            if (node.tagName.toLowerCase() === 'a') node.setAttribute('href', target);
+            else node.setAttribute('data-href', target);
+          }
         });
       };
 
       document.addEventListener('DOMContentLoaded', () => {
-        const toggle = document.getElementById('lang-toggle') as HTMLSelectElement | null;
+        const toggle = document.getElementById('lang-toggle');
         const activeLang = getPreferredLang();
 
-        if (toggle) {
-          toggle.value = activeLang;
-        }
-
+        if (toggle) toggle.value = activeLang;
         applyLanguage(activeLang);
 
-        document.body.addEventListener('click', (event: MouseEvent) => {
-          const anchor = (event.target as HTMLElement | null)?.closest('a') as HTMLAnchorElement | null;
+        // Click interception to normalize internal links to routeMap
+        document.body.addEventListener('click', (event) => {
+          const anchor = (event.target && event.target.closest) ? event.target.closest('a') : null;
           if (!anchor) return;
           const href = anchor.getAttribute('href');
           if (!href || href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('#')) return;
 
-          const key = anchor.dataset.key as keyof typeof routeMap | undefined;
+          const key = anchor.dataset.key;
           if (key && routeMap[key]) {
             anchor.setAttribute('href', routeMap[key]);
           } else if (!Object.values(routeMap).includes(href)) {
@@ -143,7 +172,7 @@ const routeMap = {
 
         if (toggle) {
           toggle.addEventListener('change', (event) => {
-            const selected = (event.target as HTMLSelectElement).value === 'ar' ? 'ar' : 'en';
+            const selected = (event.target && event.target.value === 'ar') ? 'ar' : 'en';
             localStorage.setItem(storageKey, selected);
             applyLanguage(selected);
           });
