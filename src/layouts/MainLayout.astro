@@ -101,11 +101,15 @@ const routeMap = {
           document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
           document.documentElement.lang = lang;
 
-          // Type-safe element querying
-          const dynamicElements = document.querySelectorAll('[data-i18n-key]');
+          // Query everything that has either data-i18n-key or data-key attributes
+          const dynamicElements = document.querySelectorAll('[data-i18n-key], [data-key]');
+
           dynamicElements.forEach((el) => {
             const htmlEl = el as HTMLElement;
-            const key = htmlEl.dataset.i18nKey;
+            
+            // Accept whichever key is defined on the element as a fallback
+            const key = htmlEl.dataset.i18nKey || htmlEl.dataset.key;
+            
             if (key && translations[lang] && translations[lang][key]) {
               htmlEl.textContent = translations[lang][key];
             }
