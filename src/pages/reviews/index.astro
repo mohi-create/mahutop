@@ -1,58 +1,62 @@
 ---
-import Navbar from '../../components/Navbar.astro';
+import Layout from '../../layouts/Layout.astro';
 
-// Use standard import.meta.glob to load markdown files cleanly
-const posts = import.meta.glob('./*.md', { eager: true });
-const reviews = Object.values(posts);
+const reviewModules: any = import.meta.glob('../../content/reviews/*.md', { eager: true });
+const reviews = Object.entries(reviewModules)
+  .map(([filePath, module]: [string, any]) => ({
+    slug: filePath.split('/').pop()?.replace(/\.md$/, '') ?? '',
+    frontmatter: module.frontmatter,
+  }))
+  .sort((a, b) => (a.frontmatter.title || '').localeCompare(b.frontmatter.title || ''));
 ---
+<Layout title="Review Database | MahuTop">
 
 <div class="page-shell">
-  <Navbar />
-
   <main class="database-shell">
     <header class="logs-header-container page-header">
-      <h1 class="font-mono text-xl tracking-wider" data-key="logs">
+      <h1 class="font-mono text-xl tracking-wider" data-i18n-key="logsTitle">
         SYSTEM LOGS // REVIEWS_DATABASE
       </h1>
-      <p class="text-sm text-gray-400 mt-2 page-copy" data-key="reviewsSub">
+      <p class="text-sm text-gray-400 mt-2 page-copy" data-i18n-key="reviewsSub">
         Encrypted review logs, ready for audit and deeper analysis.
       </p>
     </header>
 
     <div class="search-wrapper">
-      <input type="text" id="log-search" placeholder="FILTER LOGS // ENTER SYSTEM KEYWORDS..." autocomplete="off" />
+      <input type="text" id="log-search" data-i18n-placeholder="logsSearchPlaceholder" placeholder="FILTER LOGS // ENTER SYSTEM KEYWORDS..." autocomplete="off" />
     </div>
 
     <section class="logs-grid" aria-label="Review logs database">
-      {reviews.map((review: any) => (
-        <a class="log-row" href={review.url}>
-          <span class="row-title">{review.frontmatter?.title}</span>
-          <span class="row-date">{review.frontmatter?.date}</span>
-          <span class="row-description">{review.frontmatter?.description}</span>
+      {reviews.map((review) => (
+        <a class="log-row" href={`/reviews/${review.slug}`}>
+          <span class="row-title">{review.frontmatter.title}</span>
+          <span class="row-date">{review.frontmatter.date ?? ''}</span>
+          <span class="row-description">{review.frontmatter.description}</span>
         </a>
       ))}
     </section>
   </main>
 </div>
+</Layout>
 
 <style>
   :global(html), :global(body) {
     min-height: 100%;
     margin: 0;
-    background: #0d1117;
+    background: #06070a !important;
     color: #c9d1d9;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   }
 
   .page-shell {
     min-height: 100vh;
-    background: #0d1117;
+    background: #06070a;
   }
 
   .database-shell {
     max-width: 1100px;
     margin: 0 auto;
-    padding: 2rem 1.5rem 4rem;
+    padding: 1rem 1.5rem 4rem;
   }
 
   .page-header {
@@ -111,8 +115,11 @@ const reviews = Object.values(posts);
   .row-date {
     font-size: 0.9rem;
     color: #8b949e;
-    justify-self: end;
-    text-align: right;
+    text-align: end;
+  }
+
+  html[dir="rtl"] .row-date {
+    text-align: start;
   }
 
   .row-description {
@@ -127,10 +134,8 @@ const reviews = Object.values(posts);
     .log-row {
       grid-template-columns: 1fr;
     }
-
     .row-date {
-      justify-self: start;
-      text-align: left;
+      text-align: start;
     }
   }
 
@@ -157,18 +162,19 @@ const reviews = Object.values(posts);
 </style>
 
 <script>
-  // @ts-nocheck
-  const searchInput = document.querySelector('#log-search');
+// @ts-nocheck
+  const searchInput = document.getElementById('log-search');
   const logRows = Array.from(document.querySelectorAll('.log-row'));
 
   if (searchInput && logRows.length) {
     searchInput.addEventListener('input', (event) => {
-      const query = event.target.value.trim().toLowerCase();
+      const query = (event.target.value || '').trim().toLowerCase();
 
       logRows.forEach((row) => {
         const title = row.querySelector('.row-title')?.textContent?.toLowerCase() ?? '';
         const description = row.querySelector('.row-description')?.textContent?.toLowerCase() ?? '';
-        const matches = query.length === 0 || title.includes(query) || description.includes(query);
+        const date = row.querySelector('.row-date')?.textContent?.toLowerCase() ?? '';
+        const matches = query.length === 0 || title.includes(query) || description.includes(query) || date.includes(query);
 
         row.style.display = matches ? '' : 'none';
       });

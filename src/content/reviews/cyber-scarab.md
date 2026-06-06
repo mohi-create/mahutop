@@ -2,6 +2,7 @@
 title: "Tilde Industries Cyber Scarab"
 description: "A gorgeous cyberpunk wearable electronic badge featuring gold ENIG traces and self-blinking RGB LEDs."
 layout: '../../layouts/ReviewLayout.astro'
+date: "2025-06-01"
 affiliateLink: "https://tilde.industries/"
 priceRating: "$$"
 category: "Hardware Badge"

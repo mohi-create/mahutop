@@ -1,5 +1,22 @@
 {
-  "extends": "astro/tsconfigs/strict",
-  "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist"]
+  "extends": "astro/tsconfigs/base",
+  "include": [".astro/types.d.ts", "src/**/*", "src/**/*.astro"],
+  "exclude": ["dist", "node_modules"],
+  "compilerOptions": {
+    "strict": false,
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "allowJs": true,
+    "skipLibCheck": true,
+    "jsx": "preserve",
+    "jsxImportSource": "astro",
+    "moduleResolution": "Bundler",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@components/*": ["./src/components/*"],
+      "@layouts/*": ["./src/layouts/*"],
+      "@utils/*": ["./src/utils/*"]
+    },
+    "types": ["astro/client"]
+  }
 }

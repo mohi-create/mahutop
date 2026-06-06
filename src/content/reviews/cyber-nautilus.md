@@ -2,6 +2,7 @@
 title: "Tilde Industries Cyber Nautilus SAO"
 description: "A mechanical nautilus-themed expansion header utilizing the SAO V2 standard to bring ambient pulse lighting to any master badge."
 layout: '../../layouts/ReviewLayout.astro'
+date: "2025-06-01"
 affiliateLink: "https://tilde.industries/"
 priceRating: "$"
 category: "SAO Expansion"

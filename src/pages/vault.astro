@@ -1,39 +1,440 @@
-﻿---
-import MainLayout from '../layouts/MainLayout.astro';
+---
+import Layout from '../layouts/Layout.astro';
 ---
 
-<MainLayout title="Sovereign Vault">
-  <div class="system-controls-wrapper font-mono">
-    <h1 class="text-xl tracking-wider text-white mb-6">
-      <span data-key="vault">SOVEREIGN // VAULT_CORE</span>
-    </h1>
-
-    <div class="bg-slate-900 border border-slate-800 p-6 rounded-md">
-      <h2 class="text-emerald-400 text-lg mb-4" data-key="logs">System Diagnostics</h2>
-      <p class="text-gray-400 text-sm mb-6" data-key="reviewsSub">
-        Core engine online. Ready to normalize targeted text strings and map structures.
-      </p>
-
+<Layout title="Sovereign Vault | MahuTop">
+  <div class="vault-shell">
+    <!-- Locked state (shown by default) -->
+    <div id="vault-locked" class="vault-card">
+      <h1 class="vault-title" data-i18n-key="vaultTitle">SOVEREIGN // VAULT_CORE</h1>
+      <div class="vault-lock-screen">
+        <div class="lock-icon">🔒</div>
+        <p class="lock-message" data-i18n-key="lockedMessage">
+          Enter the vault password to access the management interface.
+        </p>
+        <div class="password-input-group">
+          <input type="password" id="vault-password" class="vault-input" data-i18n-placeholder="passwordPlaceholder" placeholder="Enter vault password..." />
+          <button id="vault-unlock-btn" class="vault-btn-primary" data-i18n-key="unlockBtn">UNLOCK VAULT</button>
+        </div>
+        <p id="vault-error" class="vault-error" style="display:none">Incorrect password. Try again.</p>
       </div>
+    </div>
+
+    <!-- Unlocked state: Product Management -->
+    <div id="vault-unlocked" class="vault-card" style="display:none">
+      <div class="vault-header">
+        <h1 class="vault-title" data-i18n-key="manageTitle">PRODUCT & AFFILIATE MANAGEMENT</h1>
+        <p class="vault-sub" data-i18n-key="manageSub">Manage products, affiliate links, and pricing from this secure vault interface.</p>
+        <button id="vault-lock-btn" class="vault-btn-secondary lock-toggle">🔒 Lock Vault</button>
+      </div>
+
+      <!-- Product Management Form -->
+      <div class="management-panel">
+        <div class="panel-header">
+          <h2 data-i18n-key="manageProducts">MANAGE PRODUCTS</h2>
+          <button id="add-product-btn" class="vault-btn-primary" data-i18n-key="addProduct">+ Add Product</button>
+        </div>
+
+        <!-- Product Form -->
+        <form id="product-form" class="product-form" style="display:none">
+          <input type="hidden" id="edit-id" value="" />
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="p-name" data-i18n-key="productName">Product Name</label>
+              <input type="text" id="p-name" required />
+            </div>
+            <div class="form-group">
+              <label for="p-category" data-i18n-key="productCategory">Category</label>
+              <select id="p-category">
+                <option value="Electronics">Electronics</option>
+                <option value="Home">Home</option>
+                <option value="Fashion">Fashion</option>
+                <option value="Health">Health</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="p-price" data-i18n-key="productPrice">Price</label>
+              <input type="text" id="p-price" required placeholder="$99" />
+            </div>
+            <div class="form-group">
+              <label for="p-old-price" data-i18n-key="productOldPrice">Old Price</label>
+              <input type="text" id="p-old-price" placeholder="$149" />
+            </div>
+            <div class="form-group full-width">
+              <label for="p-description" data-i18n-key="productDescription">Description</label>
+              <textarea id="p-description" rows="2"></textarea>
+            </div>
+            <div class="form-group full-width">
+              <label for="p-link" data-i18n-key="productAffiliateLink">Affiliate Link</label>
+              <input type="url" id="p-link" placeholder="https://example.com/affiliate/..." />
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="vault-btn-primary" data-i18n-key="saveChanges">Save Changes</button>
+            <button type="button" id="form-cancel" class="vault-btn-secondary" data-i18n-key="cancel">Cancel</button>
+          </div>
+        </form>
+
+        <!-- Product List -->
+        <div class="product-list" id="product-list">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+    </div>
   </div>
-</MainLayout>
+</Layout>
 
 <script>
-  // Safe authentication wrapper executed after layout hydration completes
-  document.addEventListener('DOMContentLoaded', () => {
-    const MASTER_PASSPHRASE = "mahutop_sovereign_2026";
-    const SESSION_FLAG = "mahutop_secure_session";
+// @ts-nocheck
+  (function(): void {
+    // === VAULT PASSWORD ===
+    // Change this to your desired password
+    const VAULT_PASSWORD = 'admin123';
+    const STORAGE_KEY = 'mahutop_vault_unlocked';
+    const PRODUCTS_KEY = 'mahutop_vault_products';
 
-    if (sessionStorage.getItem(SESSION_FLAG) !== 'true') {
-      const userInput = prompt("ENTER CRITICAL CORE AUTHORIZATION PASSWORD / أدخل كلمة المرور:");
-      
-      if (userInput === MASTER_PASSPHRASE) {
-        sessionStorage.setItem(SESSION_FLAG, 'true');
-        alert("ACCESS GRANTED // تم السماح بالدخول");
-      } else {
-        alert("ACCESS DENIED // SECURITY VIOLATION");
-        window.location.href = "/";
+    const lockedDiv = document.getElementById('vault-locked') as HTMLElement | null;
+    const unlockedDiv = document.getElementById('vault-unlocked') as HTMLElement | null;
+    const passwordInput = document.getElementById('vault-password') as HTMLInputElement | null;
+    const unlockBtn = document.getElementById('vault-unlock-btn');
+    const lockBtn = document.getElementById('vault-lock-btn');
+    const vaultError = document.getElementById('vault-error') as HTMLElement | null;
+    const addProductBtn = document.getElementById('add-product-btn') as HTMLButtonElement | null;
+    const productForm = document.getElementById('product-form') as HTMLFormElement | null;
+    const formCancel = document.getElementById('form-cancel');
+    const productList = document.getElementById('product-list') as HTMLElement | null;
+
+    // Default products if none stored
+    const DEFAULT_PRODUCTS = [
+      { id: 'p1', name: 'Pro Compute Core Rig', category: 'Electronics', priceOld: '$1,499', priceNew: '$1,299', description: 'Benchmark: Optimized for local Dolphin3 and LLM execution.', affiliateLink: 'https://example.com/affiliate/p1' },
+      { id: 'p2', name: 'Ergonomic Workspace Command Desk', category: 'Home', priceOld: '', priceNew: '$349', description: 'Setup: Perfect minimalist cable-managed layout.', affiliateLink: 'https://example.com/affiliate/p2' },
+      { id: 'p3', name: 'Tactical Cyber-Shell Parka', category: 'Fashion', priceOld: '$180', priceNew: '$120', description: 'Style: Matte-black weatherized utility outer shell.', affiliateLink: 'https://example.com/affiliate/p3' },
+      { id: 'p4', name: 'Smart Nootropic Focus Stacks', category: 'Health', priceOld: '', priceNew: '$45', description: 'Routine: Morning execution matrix for deep focus work.', affiliateLink: 'https://example.com/affiliate/p4' }
+    ];
+
+    function loadProducts() {
+      try {
+        var stored = localStorage.getItem(PRODUCTS_KEY);
+        if (stored) {
+          var parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch(e) {}
+      localStorage.setItem(PRODUCTS_KEY, JSON.stringify(DEFAULT_PRODUCTS));
+      return DEFAULT_PRODUCTS;
+    }
+
+    function saveProducts(products: any[]) {
+      localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+    }
+
+    function renderProducts() {
+      var products = loadProducts();
+      if (!productList) return;
+
+      if (products.length === 0) {
+        productList.innerHTML = '<p class="empty-state">No products yet. Add your first product above.</p>';
+        return;
+      }
+
+      var html = '<div class="products-table">';
+      html += '<div class="table-header"><span>Name</span><span>Category</span><span>Price</span><span>Actions</span></div>';
+      products.forEach(function(product) {
+        html += '<div class="table-row" data-id="' + product.id + '">';
+        html += '<span class="cell-name">' + escapeHtml(product.name) + '</span>';
+        html += '<span class="cell-cat">' + escapeHtml(product.category) + '</span>';
+        html += '<span class="cell-price">' + escapeHtml(product.priceNew) + '</span>';
+        html += '<span class="cell-actions">';
+        html += '<button class="edit-btn" data-id="' + product.id + '">✏️ Edit</button>';
+        html += '<button class="delete-btn" data-id="' + product.id + '">🗑️ Delete</button>';
+        html += '</span>';
+        html += '</div>';
+      });
+      html += '</div>';
+      productList.innerHTML = html;
+
+      productList.querySelectorAll('.edit-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var id = (btn as HTMLElement).dataset.id;
+          if (id) editProduct(id);
+        });
+      });
+      productList.querySelectorAll('.delete-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var id = (btn as HTMLElement).dataset.id;
+          if (id) deleteProduct(id);
+        });
+      });
+    }
+
+    function escapeHtml(text: string) {
+      var div = document.createElement('div');
+      div.appendChild(document.createTextNode(String(text)));
+      return div.innerHTML;
+    }
+
+    function getVal(id: string): string {
+      var el = document.getElementById(id) as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | null;
+      return el ? el.value : '';
+    }
+
+    function setVal(id: string, val: string) {
+      var el = document.getElementById(id) as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | null;
+      if (el) el.value = val;
+    }
+
+    function editProduct(id: string) {
+      var products = loadProducts();
+      var product = products.find(function(p: any) { return p.id === id; });
+      if (!product) return;
+
+      setVal('edit-id', id);
+      setVal('p-name', product.name);
+      setVal('p-category', product.category);
+      setVal('p-price', product.priceNew);
+      setVal('p-old-price', product.priceOld || '');
+      setVal('p-description', product.description || '');
+      setVal('p-link', product.affiliateLink || '');
+      if (productForm) productForm.style.display = 'block';
+      if (addProductBtn) addProductBtn.textContent = 'Cancel';
+    }
+
+    function deleteProduct(id: string) {
+      if (!confirm('Delete this product?')) return;
+      var products = loadProducts();
+      var index = products.findIndex(function(p: any) { return p.id === id; });
+      if (index > -1) {
+        products.splice(index, 1);
+        saveProducts(products);
+        renderProducts();
       }
     }
-  });
+
+    function resetForm() {
+      setVal('edit-id', '');
+      setVal('p-name', '');
+      setVal('p-category', 'Electronics');
+      setVal('p-price', '');
+      setVal('p-old-price', '');
+      setVal('p-description', '');
+      setVal('p-link', '');
+      if (productForm) productForm.style.display = 'none';
+      if (addProductBtn) addProductBtn.textContent = '+ Add Product';
+    }
+
+    var isUnlocked = sessionStorage.getItem(STORAGE_KEY) === 'true';
+    if (isUnlocked && lockedDiv && unlockedDiv) {
+      lockedDiv.style.display = 'none';
+      unlockedDiv.style.display = 'block';
+      renderProducts();
+    }
+
+    if (unlockBtn && lockedDiv && unlockedDiv && passwordInput && vaultError) {
+      unlockBtn.addEventListener('click', function() {
+        var password = passwordInput.value;
+        if (password === VAULT_PASSWORD) {
+          sessionStorage.setItem(STORAGE_KEY, 'true');
+          lockedDiv.style.display = 'none';
+          unlockedDiv.style.display = 'block';
+          vaultError.style.display = 'none';
+          renderProducts();
+        } else {
+          vaultError.style.display = 'block';
+        }
+      });
+    }
+
+    if (passwordInput) {
+      passwordInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && unlockBtn) (unlockBtn as HTMLElement).click();
+      });
+    }
+
+    if (lockBtn && lockedDiv && unlockedDiv && passwordInput) {
+      lockBtn.addEventListener('click', function() {
+        sessionStorage.removeItem(STORAGE_KEY);
+        lockedDiv.style.display = 'block';
+        unlockedDiv.style.display = 'none';
+        passwordInput.value = '';
+      });
+    }
+
+    if (addProductBtn && productForm) {
+      addProductBtn.addEventListener('click', function() {
+        if (productForm.style.display === 'block') {
+          resetForm();
+        } else {
+          resetForm();
+          productForm.style.display = 'block';
+        }
+      });
+    }
+
+    if (formCancel) {
+      formCancel.addEventListener('click', resetForm);
+    }
+
+    if (productForm) {
+      productForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        var products = loadProducts();
+        var editId = getVal('edit-id');
+
+        var product: any = {
+          name: getVal('p-name').trim(),
+          category: getVal('p-category'),
+          priceNew: getVal('p-price').trim(),
+          priceOld: getVal('p-old-price').trim(),
+          description: getVal('p-description').trim(),
+          affiliateLink: getVal('p-link').trim()
+        };
+
+        if (!product.name || !product.priceNew) return;
+
+        if (editId) {
+          var index = products.findIndex(function(p: any) { return p.id === editId; });
+          if (index > -1) {
+            product.id = editId;
+            products[index] = product;
+          }
+        } else {
+          product.id = 'p' + Date.now();
+          products.push(product);
+        }
+
+        saveProducts(products);
+        renderProducts();
+        resetForm();
+      });
+    }
+
+    // Update placeholder translations
+    function updatePlaceholders() {
+      var lang = localStorage.getItem('mahutop-lang') || 'en';
+      var placeholders = {
+        en: { passwordPlaceholder: 'Enter vault password...' },
+        ar: { passwordPlaceholder: 'أدخل كلمة مرور الخزنة...' }
+      };
+      var p = placeholders[lang as 'en' | 'ar'] || placeholders.en;
+      var input = document.getElementById('vault-password') as HTMLInputElement | null;
+      if (input) input.placeholder = p.passwordPlaceholder;
+    }
+    updatePlaceholders();
+    window.addEventListener('storage', updatePlaceholders);
+
+    var origToggle = document.getElementById('lang-toggle');
+    if (origToggle) {
+      origToggle.addEventListener('change', function() {
+        setTimeout(updatePlaceholders, 50);
+      });
+    }
+  })();
 </script>
+
+<style>
+  .vault-shell {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0.5rem 0;
+  }
+
+  .vault-card {
+    background: rgba(9, 12, 18, 0.95);
+    border: 1px solid rgba(100, 116, 139, 0.2);
+    border-radius: 16px;
+    padding: 2rem;
+  }
+
+  .vault-title {
+    font-size: 1.5rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #e6eef6;
+    margin: 0 0 0.5rem;
+  }
+
+  .vault-sub {
+    color: #94a3b8;
+    font-size: 0.95rem;
+    margin: 0 0 1.5rem;
+    max-width: 600px;
+  }
+
+  .vault-lock-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 3rem 1rem;
+    text-align: center;
+  }
+
+  .lock-icon {
+    font-size: 4rem;
+  }
+
+  .lock-message {
+    color: #cbd5e1;
+    font-size: 1.1rem;
+    max-width: 400px;
+    margin: 0;
+  }
+
+  .password-input-group {
+    display: flex;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 500px;
+  }
+
+  .vault-input {
+    flex: 1;
+    background: #0d1117;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 10px;
+    color: #f8fafc;
+    padding: 0.85rem 1rem;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .vault-input:focus {
+    border-color: #58a6ff;
+  }
+
+  .vault-btn-primary {
+    padding: 0.85rem 1.5rem;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #38bdf8, #0ea5e9);
+    color: #030712;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+    white-space: nowrap;
+  }
+
+  .vault-btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 25px rgba(56, 189, 248, 0.25);
+  }
+
+  .vault-btn-secondary {
+    padding: 0.85rem 1.5rem;
+    border-radius: 10px;
+    background: transparent;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    color: #cbd5e1;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.2s, border-color 0.2s;
+  }
+
+  .vault-btn-secondary:hover {
+    background: rgba(148, 163, 184, 0.1);
+    border-color: rgba(148, 163, 184, 0.5);
+  }
+

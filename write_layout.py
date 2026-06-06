@@ -1,4 +1,7 @@
----
+#!/usr/bin/env python3
+"""Write the Layout.astro file with full i18n support."""
+
+content = r'''---
 import { getLangFromUrl, languages } from '../utils/i18n';
 
 interface Props {
@@ -88,3 +91,10 @@ const translations: Record<SupportedLang, Record<string, string>> = {
   },
 };
 ---
+'''
+
+# Write the content to Layout.astro
+with open('src/layouts/Layout.astro', 'w', encoding='utf-8') as f:
+    f.write(content)
+
+print("Layout.astro written successfully!")

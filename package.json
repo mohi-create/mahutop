@@ -9,9 +9,16 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "test": "tsx test/i18n.test.ts"
   },
   "dependencies": {
-    "astro": "^6.3.8"
+    "@astrojs/check": "^0.9.9",
+    "astro": "^6.3.8",
+    "typescript": "^6.0.3"
+  },
+  "devDependencies": {
+    "tsx": "^4.22.4",
+    "vitest": "^4.1.8"
   }
 }

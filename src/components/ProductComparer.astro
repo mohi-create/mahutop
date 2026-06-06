@@ -36,7 +36,7 @@ const generateProductId = (product: ComparisonProduct, index: number): string =>
         <div class="product-card" data-product-id={productId}>
           {product.image && (
             <div class="product-image">
-              <img src={product.image} alt={product.name} />
+              <img src={product.image} alt={product.name} loading="lazy" />
             </div>
           )}
           
@@ -126,6 +126,13 @@ const generateProductId = (product: ComparisonProduct, index: number): string =>
     const clearAllBtn = document.getElementById('clearAllComparisons');
     const compareButtons = document.querySelectorAll('.btn-compare');
 
+    // Build a lookup map from product IDs to product data
+    const productMap = new Map();
+    PRODUCTS_DATA.forEach(function(product, index) {
+      productMap.set(product.id, product);
+      productMap.set('product-' + index, product);
+    });
+
     // Initialize
     const init = () => {
       loadComparisons();
@@ -134,9 +141,13 @@ const generateProductId = (product: ComparisonProduct, index: number): string =>
     };
 
     // Get comparisons from localStorage
-    const loadComparisons = () => {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      return stored ? JSON.parse(stored) : [];
+    const loadComparisons = function() {
+      var stored = localStorage.getItem(STORAGE_KEY);
+      try {
+        return stored ? JSON.parse(stored) : [];
+      } catch (e) {
+        return [];
+      }
     };
 
     // Save comparisons to localStorage
@@ -185,75 +196,105 @@ const generateProductId = (product: ComparisonProduct, index: number): string =>
       });
     };
 
-    // Render comparison table
-    const renderComparisonTable = () => {
-      const comparisons = loadComparisons();
+    // Render comparison table using safe DOM methods
+    const renderComparisonTable = function() {
+      var comparisons = loadComparisons();
       
       if (comparisons.length < 2) {
-        comparisonTable.innerHTML = '';
+        if (comparisonTable) comparisonTable.innerHTML = '';
         return;
       }
 
-      const selectedProducts = comparisons
-        .map((id) => PRODUCTS_DATA.find((p) => p.id === id || `product-${PRODUCTS_DATA.indexOf(p)}` === id))
-        .filter(Boolean);
+      var selectedProducts = comparisons
+        .map(function(id) { return productMap.get(id); })
+        .filter(function(p) { return p !== undefined; });
 
       if (selectedProducts.length === 0) {
         comparisonTable.innerHTML = '';
         return;
       }
 
-      let tableHTML = `
-        <div class="comparison-row header-row">
-          <div class="comparison-col col-label"></div>
-      `;
+      // Build table using DOM for safety (no innerHTML with unescaped content)
+      const fragment = document.createDocumentFragment();
 
-      selectedProducts.forEach((product) => {
-        tableHTML += `<div class="comparison-col col-product">${product.name}</div>`;
+      // Helper to create a row
+      function addRow(label, cells) {
+        const row = document.createElement('div');
+        row.className = 'comparison-row';
+        const labelCol = document.createElement('div');
+        labelCol.className = 'comparison-col col-label';
+        labelCol.textContent = label;
+        row.appendChild(labelCol);
+        cells.forEach(function(cell) {
+          if (typeof cell === 'string') {
+            const col = document.createElement('div');
+            col.className = 'comparison-col';
+            col.textContent = cell;
+            row.appendChild(col);
+          } else {
+            const col = document.createElement('div');
+            col.className = 'comparison-col';
+            col.appendChild(cell);
+            row.appendChild(col);
+          }
+        });
+        return row;
+      }
+
+      // Header row
+      const headerRow = document.createElement('div');
+      headerRow.className = 'comparison-row header-row';
+      const emptyHeader = document.createElement('div');
+      emptyHeader.className = 'comparison-col col-label';
+      headerRow.appendChild(emptyHeader);
+      selectedProducts.forEach(function(product) {
+        const col = document.createElement('div');
+        col.className = 'comparison-col col-product';
+        col.textContent = product.name;
+        headerRow.appendChild(col);
       });
-
-      tableHTML += `</div>`;
+      fragment.appendChild(headerRow);
 
       // Product Name Row
-      tableHTML += `
-        <div class="comparison-row">
-          <div class="comparison-col col-label">Product Name</div>
-      `;
-      selectedProducts.forEach((product) => {
-        tableHTML += `<div class="comparison-col">${product.name}</div>`;
-      });
-      tableHTML += `</div>`;
+      fragment.appendChild(addRow('Product Name', selectedProducts.map(function(p) { return p.name; })));
 
       // Category Row
-      tableHTML += `
-        <div class="comparison-row">
-          <div class="comparison-col col-label">Category</div>
-      `;
-      selectedProducts.forEach((product) => {
-        tableHTML += `<div class="comparison-col">${product.category}</div>`;
-      });
-      tableHTML += `</div>`;
+      fragment.appendChild(addRow('Category', selectedProducts.map(function(p) { return p.category; })));
 
-      // Price Comparison Row (Old vs New)
-      tableHTML += `
-        <div class="comparison-row">
-          <div class="comparison-col col-label">Price</div>
-      `;
-      selectedProducts.forEach((product) => {
-        let priceHTML = '';
+      // Price Row
+      const priceCells = selectedProducts.map(function(product) {
+        const container = document.createElement('span');
         if (product.priceOld) {
-          priceHTML += `<span class="price-old">${product.priceOld}</span>`;
+          const oldSpan = document.createElement('span');
+          oldSpan.className = 'price-old';
+          oldSpan.textContent = product.priceOld;
+          container.appendChild(oldSpan);
         }
-        priceHTML += `<span class="price-new">${product.priceNew}</span>`;
-        tableHTML += `<div class="comparison-col price-col">${priceHTML}</div>`;
+        const newSpan = document.createElement('span');
+        newSpan.className = 'price-new';
+        newSpan.textContent = product.priceNew;
+        container.appendChild(newSpan);
+        return container;
       });
-      tableHTML += `</div>`;
+      const priceRow = document.createElement('div');
+      priceRow.className = 'comparison-row';
+      const priceLabel = document.createElement('div');
+      priceLabel.className = 'comparison-col col-label';
+      priceLabel.textContent = 'Price';
+      priceRow.appendChild(priceLabel);
+      priceCells.forEach(function(cell) {
+        const col = document.createElement('div');
+        col.className = 'comparison-col price-col';
+        col.appendChild(cell);
+        priceRow.appendChild(col);
+      });
+      fragment.appendChild(priceRow);
 
       // Specifications Rows
-      const allSpecs = selectedProducts.reduce((acc, product) => {
+      const allSpecs = selectedProducts.reduce(function(acc, product) {
         if (product.specs) {
-          product.specs.forEach((spec) => {
-            if (!acc.find((s) => s.label === spec.label)) {
+          product.specs.forEach(function(spec) {
+            if (!acc.find(function(s) { return s.label === spec.label; })) {
               acc.push(spec);
             }
           });
@@ -261,35 +302,37 @@ const generateProductId = (product: ComparisonProduct, index: number): string =>
         return acc;
       }, []);
 
-      allSpecs.forEach((spec) => {
-        tableHTML += `
-          <div class="comparison-row">
-            <div class="comparison-col col-label">${spec.label}</div>
-        `;
-        selectedProducts.forEach((product) => {
-          const productSpec = product.specs?.find((s) => s.label === spec.label);
-          tableHTML += `<div class="comparison-col">${productSpec ? productSpec.value : '—'}</div>`;
+      allSpecs.forEach(function(spec) {
+        const specCells = selectedProducts.map(function(product) {
+          const productSpec = product.specs ? product.specs.find(function(s) { return s.label === spec.label; }) : null;
+          return productSpec ? productSpec.value : '\u2014';
         });
-        tableHTML += `</div>`;
+        fragment.appendChild(addRow(spec.label, specCells));
       });
 
       // CTA Buttons Row
-      tableHTML += `
-        <div class="comparison-row cta-row">
-          <div class="comparison-col col-label">Action</div>
-      `;
-      selectedProducts.forEach((product) => {
-        tableHTML += `
-          <div class="comparison-col">
-            <a href="${product.affiliateLink}" target="_blank" rel="noopener noreferrer" class="btn-comparison-cta">
-              View Product
-            </a>
-          </div>
-        `;
+      const ctaRow = document.createElement('div');
+      ctaRow.className = 'comparison-row cta-row';
+      const ctaLabel = document.createElement('div');
+      ctaLabel.className = 'comparison-col col-label';
+      ctaLabel.textContent = 'Action';
+      ctaRow.appendChild(ctaLabel);
+      selectedProducts.forEach(function(product) {
+        const col = document.createElement('div');
+        col.className = 'comparison-col';
+        const link = document.createElement('a');
+        link.href = product.affiliateLink;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.className = 'btn-comparison-cta';
+        link.textContent = 'View Product';
+        col.appendChild(link);
+        ctaRow.appendChild(col);
       });
-      tableHTML += `</div>`;
+      fragment.appendChild(ctaRow);
 
-      comparisonTable.innerHTML = tableHTML;
+      comparisonTable.innerHTML = '';
+      comparisonTable.appendChild(fragment);
     };
 
     // Update drawer visibility state
@@ -706,7 +749,6 @@ const generateProductId = (product: ComparisonProduct, index: number): string =>
     border-color: var(--color-text-secondary);
   }
 
-  /* Responsive Design */
   @media (max-width: 768px) {
     .products-grid {
       grid-template-columns: 1fr;
@@ -753,7 +795,6 @@ const generateProductId = (product: ComparisonProduct, index: number): string =>
     }
   }
 
-  /* Dark mode support */
   @media (prefers-color-scheme: dark) {
     :root {
       --color-bg: #1f2937;
