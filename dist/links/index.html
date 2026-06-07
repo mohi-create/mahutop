@@ -1,4 +1,487 @@
-<!DOCTYPE html>  <script type="module">const r=document.getElementById("ai-prompt"),i=document.getElementById("ai-generate"),a=document.getElementById("ai-output"),o=()=>localStorage.getItem("mahutop-lang")==="ar"?"ar":"en",c={en:"Please enter a prompt to generate a compelling product article summary.",ar:"يرجى إدخال وصف لتوليد ملخص مقال تسويقي جذاب للمنتج."},s={en:e=>`Product Article Preview:
+<!DOCTYPE html><html lang="en" dir="ltr"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="MahuTop - The Unclonable Full-Stack Powerhouse Market."><link rel="icon" type="image/svg+xml" href="/favicon.svg"><title>Grand Bazaar Products</title><!-- Pre-paint: set lang/dir before first paint to avoid flicker --><script>
+      (function() {
+        var lang = localStorage.getItem('mahutop-lang') || 'en';
+        document.documentElement.lang = lang;
+        document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+        if (lang === 'ar') {
+          document.documentElement.classList.add('lang-ar');
+        } else {
+          document.documentElement.classList.remove('lang-ar');
+        }
+      })();
+    </script><style>*,*:before,*:after{box-sizing:border-box;margin:0;padding:0}html{font-family:Segoe UI,system-ui,-apple-system,sans-serif;background:#060a10;color:#e6eef6;-webkit-font-smoothing:antialiased}html.lang-ar{font-family:Segoe UI,Tahoma,Arial,sans-serif}body{min-height:100vh;padding:2rem 1.5rem}a{color:inherit}.site-nav{max-width:1200px;margin:0 auto 2.5rem;display:flex;align-items:center;gap:2rem;padding:1rem 1.5rem;border:1px solid rgba(56,189,248,.12);border-radius:14px;background:#090c12e6}html[dir=rtl] .site-nav{flex-direction:row-reverse}.site-nav .brand{font-size:1.3rem;font-weight:700;letter-spacing:.15em;color:#38bdf8;text-decoration:none;white-space:nowrap}.site-nav .nav-center{display:flex;gap:1.5rem;flex-wrap:wrap;flex:1;justify-content:center}.site-nav .nav-center a{font-size:.85rem;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;text-decoration:none;transition:color .2s ease;white-space:nowrap}.site-nav .nav-center a:hover,.site-nav .nav-center a.active{color:#38bdf8}.lang-switcher{display:flex;align-items:center;gap:.4rem;margin-left:auto;background:#0f172acc;border:1px solid rgba(56,189,248,.15);border-radius:8px;padding:.3rem;cursor:pointer;user-select:none;flex-shrink:0}html[dir=rtl] .lang-switcher{margin-left:0;margin-right:auto}.lang-btn{padding:.35rem .7rem;border-radius:6px;border:none;background:transparent;color:#64748b;font-size:.78rem;font-weight:600;letter-spacing:.05em;cursor:pointer;transition:all .2s ease;white-space:nowrap}.lang-btn.active{background:#38bdf826;color:#38bdf8}.lang-btn:hover:not(.active){color:#94a3b8}html[dir=rtl] body{font-family:Segoe UI,Tahoma,Arial,sans-serif}
+</style>
+<link rel="stylesheet" href="/_astro/links.CgqbneTV.css"></head> <body> <nav class="site-nav"> <a class="brand" href="/" data-i18n-key="brand">MAHUTOP</a> <div class="nav-center"> <a href="/" data-i18n-key="home">HOME_BASE</a> <a href="/vault" data-i18n-key="vault">SOVEREIGN VAULT</a> <a href="/bazaar" data-i18n-key="bazaar">GRAND BAZAAR</a> <a href="/reviews" data-i18n-key="logs">SYSTEM LOGS</a> </div> <div class="lang-switcher" id="lang-switcher"> <button class="lang-btn" data-lang="en">EN</button> <button class="lang-btn" data-lang="ar">عربي</button> </div> </nav>  <div class="store-shell" data-astro-cid-au7rboj5> <div class="recommendation-header" data-astro-cid-p2gbejuj> <div class="container" data-astro-cid-p2gbejuj> <div class="grid-wrapper" data-astro-cid-p2gbejuj> <div class="recommendation-card badge badge-best-seller" dir="ltr" data-astro-cid-p2gbejuj>  <div class="badge-container best-seller" data-astro-cid-p2gbejuj> <span class="badge-text" data-astro-cid-p2gbejuj>Best Seller</span> </div>  <div class="card-content" data-astro-cid-p2gbejuj> <div class="category-tag" data-astro-cid-p2gbejuj>Electronics</div> <h3 class="product-title" data-astro-cid-p2gbejuj>Pro Compute Core Rig</h3> <div class="price-section" data-astro-cid-p2gbejuj> <span class="price-label" data-astro-cid-p2gbejuj> Price </span> <span class="price-value" data-astro-cid-p2gbejuj>$1,299</span> </div> <a href="https://example.com/affiliate/p1" class="cta-button" target="_blank" rel="noopener noreferrer" data-astro-cid-p2gbejuj> Explore Now </a> </div> </div><div class="recommendation-card badge badge-best-offer" dir="ltr" data-astro-cid-p2gbejuj>  <div class="badge-container best-offer" data-astro-cid-p2gbejuj> <span class="badge-text" data-astro-cid-p2gbejuj>Best Offer</span> </div>  <div class="card-content" data-astro-cid-p2gbejuj> <div class="category-tag" data-astro-cid-p2gbejuj>Fashion</div> <h3 class="product-title" data-astro-cid-p2gbejuj>Tactical Cyber-Shell Parka</h3> <div class="price-section" data-astro-cid-p2gbejuj> <span class="price-label" data-astro-cid-p2gbejuj> Price </span> <span class="price-value" data-astro-cid-p2gbejuj>$120</span> </div> <a href="https://example.com/affiliate/p3" class="cta-button" target="_blank" rel="noopener noreferrer" data-astro-cid-p2gbejuj> Explore Now </a> </div> </div><div class="recommendation-card badge badge-best-price" dir="ltr" data-astro-cid-p2gbejuj>  <div class="badge-container best-price" data-astro-cid-p2gbejuj> <span class="badge-text" data-astro-cid-p2gbejuj>Best Price</span> </div>  <div class="card-content" data-astro-cid-p2gbejuj> <div class="category-tag" data-astro-cid-p2gbejuj>Health</div> <h3 class="product-title" data-astro-cid-p2gbejuj>Smart Nootropic Focus Stacks</h3> <div class="price-section" data-astro-cid-p2gbejuj> <span class="price-label" data-astro-cid-p2gbejuj> Price </span> <span class="price-value" data-astro-cid-p2gbejuj>$45</span> </div> <a href="https://example.com/affiliate/p4" class="cta-button" target="_blank" rel="noopener noreferrer" data-astro-cid-p2gbejuj> Explore Now </a> </div> </div> </div> </div> </div> <section class="section-intro" data-astro-cid-au7rboj5> <header class="store-header mt-4" data-astro-cid-au7rboj5> <h1 data-i18n-key="bazaarTitle" data-astro-cid-au7rboj5>Affiliate Matrix</h1> <p class="lead" data-i18n-key="bazaarSub" data-astro-cid-au7rboj5>Curated premium storefront — time-limited offers auto-expire.</p> </header> </section> <section class="section-comparer" data-astro-cid-au7rboj5> <h2 class="section-heading" data-i18n-key="comparerTitle" data-astro-cid-au7rboj5>Compare Top Products</h2> <p class="section-copy" data-i18n-key="comparerDesc" data-astro-cid-au7rboj5>Select up to three products to compare pricing, categories, and feature details in a single side-by-side view.</p> <div class="product-comparer-container" data-astro-cid-j6cu7s6d> <!-- Product Cards with Compare Checkboxes --> <div class="products-grid" data-astro-cid-j6cu7s6d> <div class="product-card" data-product-id="p1" data-astro-cid-j6cu7s6d>  <div class="product-info" data-astro-cid-j6cu7s6d> <span class="product-category" data-astro-cid-j6cu7s6d>Electronics</span> <h3 class="product-name" data-astro-cid-j6cu7s6d>Pro Compute Core Rig</h3> <div class="price-section" data-astro-cid-j6cu7s6d> <span class="price-old" data-astro-cid-j6cu7s6d>$1,499</span> <span class="price-new" data-astro-cid-j6cu7s6d>$1,299</span> </div> <div class="specs-preview" data-astro-cid-j6cu7s6d> <div class="spec-item" data-astro-cid-j6cu7s6d> <span class="spec-label" data-astro-cid-j6cu7s6d>CPU:</span> <span class="spec-value" data-astro-cid-j6cu7s6d>16-core Zen 5</span> </div><div class="spec-item" data-astro-cid-j6cu7s6d> <span class="spec-label" data-astro-cid-j6cu7s6d>RAM:</span> <span class="spec-value" data-astro-cid-j6cu7s6d>64GB DDR5</span> </div> </div> </div> <div class="card-actions" data-astro-cid-j6cu7s6d> <a href="https://example.com/affiliate/p1" class="btn-purchase" target="_blank" rel="noopener noreferrer" data-astro-cid-j6cu7s6d>
+Buy Now
+</a> <button class="btn-compare" data-compare-id="p1" aria-label="Compare Pro Compute Core Rig" data-astro-cid-j6cu7s6d> <span class="compare-icon" data-astro-cid-j6cu7s6d>⊕</span> <span class="compare-text" data-astro-cid-j6cu7s6d>Compare</span> </button> </div> </div><div class="product-card" data-product-id="p2" data-astro-cid-j6cu7s6d>  <div class="product-info" data-astro-cid-j6cu7s6d> <span class="product-category" data-astro-cid-j6cu7s6d>Home</span> <h3 class="product-name" data-astro-cid-j6cu7s6d>Ergonomic Workspace Command Desk</h3> <div class="price-section" data-astro-cid-j6cu7s6d>  <span class="price-new" data-astro-cid-j6cu7s6d>$349</span> </div> <div class="specs-preview" data-astro-cid-j6cu7s6d> <div class="spec-item" data-astro-cid-j6cu7s6d> <span class="spec-label" data-astro-cid-j6cu7s6d>Material:</span> <span class="spec-value" data-astro-cid-j6cu7s6d>Solid oak composite</span> </div><div class="spec-item" data-astro-cid-j6cu7s6d> <span class="spec-label" data-astro-cid-j6cu7s6d>Adjustable:</span> <span class="spec-value" data-astro-cid-j6cu7s6d>Standing desk mode</span> </div> </div> </div> <div class="card-actions" data-astro-cid-j6cu7s6d> <a href="https://example.com/affiliate/p2" class="btn-purchase" target="_blank" rel="noopener noreferrer" data-astro-cid-j6cu7s6d>
+Buy Now
+</a> <button class="btn-compare" data-compare-id="p2" aria-label="Compare Ergonomic Workspace Command Desk" data-astro-cid-j6cu7s6d> <span class="compare-icon" data-astro-cid-j6cu7s6d>⊕</span> <span class="compare-text" data-astro-cid-j6cu7s6d>Compare</span> </button> </div> </div><div class="product-card" data-product-id="p3" data-astro-cid-j6cu7s6d>  <div class="product-info" data-astro-cid-j6cu7s6d> <span class="product-category" data-astro-cid-j6cu7s6d>Fashion</span> <h3 class="product-name" data-astro-cid-j6cu7s6d>Tactical Cyber-Shell Parka</h3> <div class="price-section" data-astro-cid-j6cu7s6d> <span class="price-old" data-astro-cid-j6cu7s6d>$180</span> <span class="price-new" data-astro-cid-j6cu7s6d>$120</span> </div> <div class="specs-preview" data-astro-cid-j6cu7s6d> <div class="spec-item" data-astro-cid-j6cu7s6d> <span class="spec-label" data-astro-cid-j6cu7s6d>Shell:</span> <span class="spec-value" data-astro-cid-j6cu7s6d>Waterproof ripstop</span> </div><div class="spec-item" data-astro-cid-j6cu7s6d> <span class="spec-label" data-astro-cid-j6cu7s6d>Lining:</span> <span class="spec-value" data-astro-cid-j6cu7s6d>Thermal insulating mesh</span> </div> </div> </div> <div class="card-actions" data-astro-cid-j6cu7s6d> <a href="https://example.com/affiliate/p3" class="btn-purchase" target="_blank" rel="noopener noreferrer" data-astro-cid-j6cu7s6d>
+Buy Now
+</a> <button class="btn-compare" data-compare-id="p3" aria-label="Compare Tactical Cyber-Shell Parka" data-astro-cid-j6cu7s6d> <span class="compare-icon" data-astro-cid-j6cu7s6d>⊕</span> <span class="compare-text" data-astro-cid-j6cu7s6d>Compare</span> </button> </div> </div><div class="product-card" data-product-id="p4" data-astro-cid-j6cu7s6d>  <div class="product-info" data-astro-cid-j6cu7s6d> <span class="product-category" data-astro-cid-j6cu7s6d>Health</span> <h3 class="product-name" data-astro-cid-j6cu7s6d>Smart Nootropic Focus Stacks</h3> <div class="price-section" data-astro-cid-j6cu7s6d>  <span class="price-new" data-astro-cid-j6cu7s6d>$45</span> </div> <div class="specs-preview" data-astro-cid-j6cu7s6d> <div class="spec-item" data-astro-cid-j6cu7s6d> <span class="spec-label" data-astro-cid-j6cu7s6d>Form:</span> <span class="spec-value" data-astro-cid-j6cu7s6d>Capsule bundle</span> </div><div class="spec-item" data-astro-cid-j6cu7s6d> <span class="spec-label" data-astro-cid-j6cu7s6d>Support:</span> <span class="spec-value" data-astro-cid-j6cu7s6d>Cognitive clarity and calm</span> </div> </div> </div> <div class="card-actions" data-astro-cid-j6cu7s6d> <a href="https://example.com/affiliate/p4" class="btn-purchase" target="_blank" rel="noopener noreferrer" data-astro-cid-j6cu7s6d>
+Buy Now
+</a> <button class="btn-compare" data-compare-id="p4" aria-label="Compare Smart Nootropic Focus Stacks" data-astro-cid-j6cu7s6d> <span class="compare-icon" data-astro-cid-j6cu7s6d>⊕</span> <span class="compare-text" data-astro-cid-j6cu7s6d>Compare</span> </button> </div> </div> </div> <!-- Comparison Drawer Panel --> <div class="comparison-drawer" id="comparisonDrawer" data-astro-cid-j6cu7s6d> <div class="drawer-header" data-astro-cid-j6cu7s6d> <h2 class="drawer-title" data-astro-cid-j6cu7s6d>Product Comparison</h2> <button class="btn-close" id="closeComparison" aria-label="Close comparison" data-astro-cid-j6cu7s6d>
+✕
+</button> </div> <div class="comparison-table-wrapper" data-astro-cid-j6cu7s6d> <div class="comparison-table" id="comparisonTable" data-astro-cid-j6cu7s6d> <!-- Dynamically populated by script --> </div> </div> <div class="drawer-footer" data-astro-cid-j6cu7s6d> <button class="btn-clear-all" id="clearAllComparisons" data-astro-cid-j6cu7s6d>
+Clear All Selections
+</button> </div> </div> <!-- Backdrop --> <div class="drawer-backdrop" id="drawerBackdrop" data-astro-cid-j6cu7s6d></div> </div> <script>(function(){const maxComparisons = 3;
+const products = [{"id":"p1","name":"Pro Compute Core Rig","category":"Electronics","priceOld":"$1,499","priceNew":"$1,299","description":"Benchmark: Optimized for local Dolphin3 and LLM execution.","affiliateLink":"https://example.com/affiliate/p1","specs":[{"label":"CPU","value":"16-core Zen 5"},{"label":"RAM","value":"64GB DDR5"},{"label":"Storage","value":"2TB NVMe SSD"}]},{"id":"p2","name":"Ergonomic Workspace Command Desk","category":"Home","priceNew":"$349","description":"Setup: Perfect minimalist cable-managed layout.","affiliateLink":"https://example.com/affiliate/p2","specs":[{"label":"Material","value":"Solid oak composite"},{"label":"Adjustable","value":"Standing desk mode"},{"label":"Extras","value":"RGB ambient trim"}]},{"id":"p3","name":"Tactical Cyber-Shell Parka","category":"Fashion","priceOld":"$180","priceNew":"$120","description":"Style: Matte-black weatherized utility outer shell.","affiliateLink":"https://example.com/affiliate/p3","specs":[{"label":"Shell","value":"Waterproof ripstop"},{"label":"Lining","value":"Thermal insulating mesh"},{"label":"Storage","value":"7 secure pockets"}]},{"id":"p4","name":"Smart Nootropic Focus Stacks","category":"Health","priceNew":"$45","description":"Routine: Morning execution matrix for deep focus work.","affiliateLink":"https://example.com/affiliate/p4","specs":[{"label":"Form","value":"Capsule bundle"},{"label":"Support","value":"Cognitive clarity and calm"},{"label":"Cycle","value":"30-day regimen"}]}];
+
+  (() => {
+    const STORAGE_KEY = 'product_comparisons';
+    const MAX_COMPARISONS = maxComparisons || 3;
+    const PRODUCTS_DATA = products || [];
+
+    // DOM Elements
+    const drawer = document.getElementById('comparisonDrawer');
+    const backdrop = document.getElementById('drawerBackdrop');
+    const comparisonTable = document.getElementById('comparisonTable');
+    const closeBtn = document.getElementById('closeComparison');
+    const clearAllBtn = document.getElementById('clearAllComparisons');
+    const compareButtons = document.querySelectorAll('.btn-compare');
+
+    // Build a lookup map from product IDs to product data
+    const productMap = new Map();
+    PRODUCTS_DATA.forEach(function(product, index) {
+      productMap.set(product.id, product);
+      productMap.set('product-' + index, product);
+    });
+
+    // Initialize
+    const init = () => {
+      loadComparisons();
+      attachEventListeners();
+      updateDrawerState();
+    };
+
+    // Get comparisons from localStorage
+    const loadComparisons = function() {
+      var stored = localStorage.getItem(STORAGE_KEY);
+      try {
+        return stored ? JSON.parse(stored) : [];
+      } catch (e) {
+        return [];
+      }
+    };
+
+    // Save comparisons to localStorage
+    const saveComparisons = (comparisons) => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(comparisons));
+    };
+
+    // Toggle product comparison
+    const toggleComparison = (productId) => {
+      const comparisons = loadComparisons();
+      const index = comparisons.indexOf(productId);
+
+      if (index > -1) {
+        // Remove if already selected
+        comparisons.splice(index, 1);
+      } else {
+        // Add if under max limit
+        if (comparisons.length < MAX_COMPARISONS) {
+          comparisons.push(productId);
+        } else {
+          alert(`You can compare up to ${MAX_COMPARISONS} products at a time.`);
+          return;
+        }
+      }
+
+      saveComparisons(comparisons);
+      updateUI();
+      updateDrawerState();
+    };
+
+    // Update UI state for buttons
+    const updateUI = () => {
+      const comparisons = loadComparisons();
+      
+      compareButtons.forEach((btn) => {
+        const productId = btn.dataset.compareId;
+        const isSelected = comparisons.includes(productId);
+        
+        if (isSelected) {
+          btn.classList.add('active');
+          btn.setAttribute('aria-pressed', 'true');
+        } else {
+          btn.classList.remove('active');
+          btn.setAttribute('aria-pressed', 'false');
+        }
+      });
+    };
+
+    // Render comparison table using safe DOM methods
+    const renderComparisonTable = function() {
+      var comparisons = loadComparisons();
+      
+      if (comparisons.length < 2) {
+        if (comparisonTable) comparisonTable.innerHTML = '';
+        return;
+      }
+
+      var selectedProducts = comparisons
+        .map(function(id) { return productMap.get(id); })
+        .filter(function(p) { return p !== undefined; });
+
+      if (selectedProducts.length === 0) {
+        comparisonTable.innerHTML = '';
+        return;
+      }
+
+      // Build table using DOM for safety (no innerHTML with unescaped content)
+      const fragment = document.createDocumentFragment();
+
+      // Helper to create a row
+      function addRow(label, cells) {
+        const row = document.createElement('div');
+        row.className = 'comparison-row';
+        const labelCol = document.createElement('div');
+        labelCol.className = 'comparison-col col-label';
+        labelCol.textContent = label;
+        row.appendChild(labelCol);
+        cells.forEach(function(cell) {
+          if (typeof cell === 'string') {
+            const col = document.createElement('div');
+            col.className = 'comparison-col';
+            col.textContent = cell;
+            row.appendChild(col);
+          } else {
+            const col = document.createElement('div');
+            col.className = 'comparison-col';
+            col.appendChild(cell);
+            row.appendChild(col);
+          }
+        });
+        return row;
+      }
+
+      // Header row
+      const headerRow = document.createElement('div');
+      headerRow.className = 'comparison-row header-row';
+      const emptyHeader = document.createElement('div');
+      emptyHeader.className = 'comparison-col col-label';
+      headerRow.appendChild(emptyHeader);
+      selectedProducts.forEach(function(product) {
+        const col = document.createElement('div');
+        col.className = 'comparison-col col-product';
+        col.textContent = product.name;
+        headerRow.appendChild(col);
+      });
+      fragment.appendChild(headerRow);
+
+      // Product Name Row
+      fragment.appendChild(addRow('Product Name', selectedProducts.map(function(p) { return p.name; })));
+
+      // Category Row
+      fragment.appendChild(addRow('Category', selectedProducts.map(function(p) { return p.category; })));
+
+      // Price Row
+      const priceCells = selectedProducts.map(function(product) {
+        const container = document.createElement('span');
+        if (product.priceOld) {
+          const oldSpan = document.createElement('span');
+          oldSpan.className = 'price-old';
+          oldSpan.textContent = product.priceOld;
+          container.appendChild(oldSpan);
+        }
+        const newSpan = document.createElement('span');
+        newSpan.className = 'price-new';
+        newSpan.textContent = product.priceNew;
+        container.appendChild(newSpan);
+        return container;
+      });
+      const priceRow = document.createElement('div');
+      priceRow.className = 'comparison-row';
+      const priceLabel = document.createElement('div');
+      priceLabel.className = 'comparison-col col-label';
+      priceLabel.textContent = 'Price';
+      priceRow.appendChild(priceLabel);
+      priceCells.forEach(function(cell) {
+        const col = document.createElement('div');
+        col.className = 'comparison-col price-col';
+        col.appendChild(cell);
+        priceRow.appendChild(col);
+      });
+      fragment.appendChild(priceRow);
+
+      // Specifications Rows
+      const allSpecs = selectedProducts.reduce(function(acc, product) {
+        if (product.specs) {
+          product.specs.forEach(function(spec) {
+            if (!acc.find(function(s) { return s.label === spec.label; })) {
+              acc.push(spec);
+            }
+          });
+        }
+        return acc;
+      }, []);
+
+      allSpecs.forEach(function(spec) {
+        const specCells = selectedProducts.map(function(product) {
+          const productSpec = product.specs ? product.specs.find(function(s) { return s.label === spec.label; }) : null;
+          return productSpec ? productSpec.value : '\u2014';
+        });
+        fragment.appendChild(addRow(spec.label, specCells));
+      });
+
+      // CTA Buttons Row
+      const ctaRow = document.createElement('div');
+      ctaRow.className = 'comparison-row cta-row';
+      const ctaLabel = document.createElement('div');
+      ctaLabel.className = 'comparison-col col-label';
+      ctaLabel.textContent = 'Action';
+      ctaRow.appendChild(ctaLabel);
+      selectedProducts.forEach(function(product) {
+        const col = document.createElement('div');
+        col.className = 'comparison-col';
+        const link = document.createElement('a');
+        link.href = product.affiliateLink;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.className = 'btn-comparison-cta';
+        link.textContent = 'View Product';
+        col.appendChild(link);
+        ctaRow.appendChild(col);
+      });
+      fragment.appendChild(ctaRow);
+
+      comparisonTable.innerHTML = '';
+      comparisonTable.appendChild(fragment);
+    };
+
+    // Update drawer visibility state
+    const updateDrawerState = () => {
+      const comparisons = loadComparisons();
+      const isVisible = comparisons.length >= 2;
+
+      if (isVisible) {
+        drawer.classList.add('active');
+        backdrop.classList.add('active');
+        renderComparisonTable();
+      } else {
+        drawer.classList.remove('active');
+        backdrop.classList.remove('active');
+      }
+    };
+
+    // Close drawer
+    const closeDrawer = () => {
+      const comparisons = loadComparisons();
+      saveComparisons([]);
+      updateUI();
+      updateDrawerState();
+    };
+
+    // Attach event listeners
+    const attachEventListeners = () => {
+      compareButtons.forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const productId = btn.dataset.compareId;
+          toggleComparison(productId);
+        });
+      });
+
+      closeBtn?.addEventListener('click', closeDrawer);
+      backdrop?.addEventListener('click', closeDrawer);
+      clearAllBtn?.addEventListener('click', closeDrawer);
+
+      // Handle Escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && drawer.classList.contains('active')) {
+          closeDrawer();
+        }
+      });
+    };
+
+    // Start the component
+    init();
+  })();
+})();</script> </section> <section class="section-electronics" data-astro-cid-au7rboj5> <h2 class="sec-title" data-i18n-key="electronicsTitle" data-astro-cid-au7rboj5>01 // ELECTRONICS &amp; TECHNOLOGY [PERFORMANCE BENCHMARKS]</h2> <div class="cards-grid" data-astro-cid-au7rboj5> <article class="product-card" data-astro-cid-au7rboj5> <div class="card-copy" data-astro-cid-au7rboj5> <h3 data-astro-cid-au7rboj5>Pro Compute Core Rig</h3> <p data-astro-cid-au7rboj5>Benchmark: Optimized for local Dolphin3 and LLM execution.</p> </div> <div class="price-box" data-astro-cid-au7rboj5> <span class="old-price" data-astro-cid-au7rboj5>$1,499</span> <span class="new-price" data-astro-cid-au7rboj5>$1,299</span> </div> <a href="https://example.com/affiliate/p1" target="_blank" rel="noopener noreferrer" class="product-cta" data-i18n-key="visitAffiliate" data-astro-cid-au7rboj5>Visit Affiliate</a> </article> </div> </section><section class="section-home" data-astro-cid-au7rboj5> <h2 class="sec-title" data-i18n-key="homeTitle" data-astro-cid-au7rboj5>02 // HOME &amp; KITCHEN [BUYING GUIDES &amp; SETUPS]</h2> <div class="cards-grid" data-astro-cid-au7rboj5> <article class="product-card" data-astro-cid-au7rboj5> <div class="card-copy" data-astro-cid-au7rboj5> <h3 data-astro-cid-au7rboj5>Ergonomic Workspace Command Desk</h3> <p data-astro-cid-au7rboj5>Setup: Perfect minimalist cable-managed layout.</p> </div> <div class="price-box" data-astro-cid-au7rboj5>  <span class="new-price" data-astro-cid-au7rboj5>$349</span> </div> <a href="https://example.com/affiliate/p2" target="_blank" rel="noopener noreferrer" class="product-cta" data-i18n-key="visitAffiliate" data-astro-cid-au7rboj5>Visit Affiliate</a> </article> </div> </section><section class="section-fashion" data-astro-cid-au7rboj5> <h2 class="sec-title" data-i18n-key="fashionTitle" data-astro-cid-au7rboj5>03 // FASHION &amp; ACCESSORIES [STYLE RECOMMENDATIONS]</h2> <div class="cards-grid" data-astro-cid-au7rboj5> <article class="product-card" data-astro-cid-au7rboj5> <div class="card-copy" data-astro-cid-au7rboj5> <h3 data-astro-cid-au7rboj5>Tactical Cyber-Shell Parka</h3> <p data-astro-cid-au7rboj5>Style: Matte-black weatherized utility outer shell.</p> </div> <div class="price-box" data-astro-cid-au7rboj5> <span class="old-price" data-astro-cid-au7rboj5>$180</span> <span class="new-price" data-astro-cid-au7rboj5>$120</span> </div> <a href="https://example.com/affiliate/p3" target="_blank" rel="noopener noreferrer" class="product-cta" data-i18n-key="visitAffiliate" data-astro-cid-au7rboj5>Visit Affiliate</a> </article> </div> </section><section class="section-health" data-astro-cid-au7rboj5> <h2 class="sec-title" data-i18n-key="healthTitle" data-astro-cid-au7rboj5>04 // HEALTH &amp; PERSONAL CARE [EXPERT ROUTINES]</h2> <div class="cards-grid" data-astro-cid-au7rboj5> <article class="product-card" data-astro-cid-au7rboj5> <div class="card-copy" data-astro-cid-au7rboj5> <h3 data-astro-cid-au7rboj5>Smart Nootropic Focus Stacks</h3> <p data-astro-cid-au7rboj5>Routine: Morning execution matrix for deep focus work.</p> </div> <div class="price-box" data-astro-cid-au7rboj5>  <span class="new-price" data-astro-cid-au7rboj5>$45</span> </div> <a href="https://example.com/affiliate/p4" target="_blank" rel="noopener noreferrer" class="product-cta" data-i18n-key="visitAffiliate" data-astro-cid-au7rboj5>Visit Affiliate</a> </article> </div> </section> <section class="section-ai" data-astro-cid-au7rboj5> <div class="assistant-panel" data-astro-cid-au7rboj5> <div class="assistant-header" data-astro-cid-au7rboj5> <div data-astro-cid-au7rboj5> <h2 class="sec-title" data-i18n-key="aiAssistantTitle" data-astro-cid-au7rboj5>AI Article Assistant</h2> <p class="assistant-copy" data-i18n-key="aiAssistantDesc" data-astro-cid-au7rboj5>Draft a product summary or promotional article instantly using a prompt that fits your affiliate storefront.</p> </div> </div> <div class="assistant-body" data-astro-cid-au7rboj5> <label for="ai-prompt" data-i18n-key="aiPromptLabel" data-astro-cid-au7rboj5>Describe the content you want</label> <input id="ai-prompt" type="text" data-i18n-placeholder="aiPromptPlaceholder" placeholder="Create a product launch article for a premium tech rig" autocomplete="off" data-astro-cid-au7rboj5> <button id="ai-generate" type="button" data-i18n-key="aiGenerateBtn" data-astro-cid-au7rboj5>Generate AI Article</button> <div id="ai-output" class="assistant-output" aria-live="polite" data-astro-cid-au7rboj5> <p class="assistant-empty" data-i18n-key="aiEmptyState" data-astro-cid-au7rboj5>Type a prompt and click Generate to create a product article summary.</p> </div> </div> </div> </section> </div>  <!-- Client-side i18n: translate all data-i18n-key elements on language switch --> <script>
+    // @ts-nocheck
+    (function() {
+      var translations = {
+        en: {
+          brand: "MAHUTOP",
+          home: "HOME_BASE",
+          vault: "SOVEREIGN VAULT",
+          bazaar: "GRAND BAZAAR",
+          logs: "SYSTEM LOGS",
+          homeTitle: "SOVEREIGN SYSTEM CORE // MAIN_MENU",
+          systemStatus: "SYSTEM OPERATIONAL // LATENCY 0ms // MODULES FULLY DEPLOYED",
+          launchVaultBtn: "LAUNCH VAULT ENGINE",
+          launchVaultDesc: "Execute Arabic character normalization, text diacritic stripping, and bulk text, PDF, or Word document processing rules.",
+          accessReviewsBtn: "ACCESS REVIEWS DATABASE",
+          accessReviewsDesc: "Browse encrypted local file logs, development audits, and markdown system documentation.",
+          vaultTitle: "SOVEREIGN // VAULT_CORE",
+          diagnosticsTitle: "System Diagnostics",
+          vaultSub: "Secure structural system processing rules, multi-language character configuration files, and system parameters.",
+          logsTitle: "SYSTEM LOGS // REVIEWS_DATABASE",
+          reviewsSub: "Encrypted review logs, ready for audit and deeper analysis.",
+          logsSearchPlaceholder: "FILTER LOGS // ENTER SYSTEM KEYWORDS...",
+          bazaarTitle: "AFFILIATE MATRIX",
+          bazaarSub: "Curated premium storefront \u2014 time-limited offers auto-expire.",
+          electronicsTitle: "01 // ELECTRONICS & TECHNOLOGY [PERFORMANCE BENCHMARKS]",
+          homeSectionTitle: "02 // HOME & KITCHEN [BUYING GUIDES & SETUPS]",
+          fashionTitle: "03 // FASHION & ACCESSORIES [STYLE RECOMMENDATIONS]",
+          healthTitle: "04 // HEALTH & PERSONAL CARE [EXPERT ROUTINES]",
+          comparerTitle: "Compare Top Products",
+          comparerDesc: "Select up to three products to compare pricing, categories, and feature details in a single side-by-side view.",
+          visitAffiliate: "Visit Affiliate",
+          aiAssistantTitle: "AI Article Assistant",
+          aiAssistantDesc: "Draft a product summary or promotional article instantly using a prompt that fits your affiliate storefront.",
+          aiPromptLabel: "Describe the content you want",
+          aiPromptPlaceholder: "Create a product launch article for a premium tech rig",
+          aiGenerateBtn: "Generate AI Article",
+          aiEmptyState: "Type a prompt and click Generate to create a product article summary.",
+          unlockBtn: "UNLOCK VAULT",
+          lockedMessage: "Enter the vault password to access the management interface.",
+          manageTitle: "PRODUCT & AFFILIATE MANAGEMENT",
+          manageSub: "Manage products, affiliate links, and pricing from this secure vault interface.",
+          manageProducts: "MANAGE PRODUCTS",
+          addProduct: "+ Add Product",
+          productName: "Product Name",
+          productCategory: "Category",
+          productPrice: "Price",
+          productOldPrice: "Old Price",
+          productDescription: "Description",
+          productAffiliateLink: "Affiliate Link",
+          saveChanges: "Save Changes",
+          cancel: "Cancel",
+          passwordPlaceholder: "Enter vault password...",
+          offerEnds: "OFFER ENDS:",
+          limitedLog: "LIMITED LOG:"
+        },
+        ar: {
+          brand: "\u0645\u0627\u0647\u0648\u062a\u0648\u0628",
+          home: "\u0627\u0644\u0635\u0641\u062d\u0629 \u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629",
+          vault: "\u062e\u0632\u0646\u0629 \u0627\u0644\u0633\u064a\u0627\u062f\u0629",
+          bazaar: "\u0627\u0644\u0628\u0627\u0632\u0627\u0631 \u0627\u0644\u0643\u0628\u064a\u0631",
+          logs: "\u0633\u062c\u0644\u0627\u062a \u0627\u0644\u0646\u0638\u0627\u0645",
+          homeTitle: "\u0646\u0648\u0627\u0629 \u0646\u0638\u0627\u0645 \u0627\u0644\u0633\u064a\u0627\u062f\u0629 // \u0627\u0644\u0642\u0627\u0626\u0645\u0629 \u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629",
+          systemStatus: "\u0627\u0644\u0646\u0638\u0627\u0645 \u064a\u0639\u0645\u0644 \u0628\u0646\u062c\u0627\u062d // \u0632\u0645\u0646 \u0627\u0644\u0627\u0633\u062a\u062c\u0627\u0628\u0629 0 \u0645\u0644\u0644\u064a \u062b\u0627\u0646\u064a\u0629 // \u0627\u0644\u0648\u062d\u062f\u0627\u062a \u0645\u0641\u0639\u0644\u0629 \u0628\u0627\u0644\u0643\u0627\u0645\u0644",
+          launchVaultBtn: "\u062a\u0634\u063a\u064a\u0644 \u0645\u062d\u0631\u0643 \u0627\u0644\u062e\u0632\u0646\u0629",
+          launchVaultDesc: "\u062a\u0646\u0641\u064a\u0630 \u0642\u0648\u0627\u0639\u062f \u0645\u0639\u0627\u0644\u062c\u0629 \u0627\u0644\u0646\u0635\u0648\u0635\u060c \u0648\u062a\u0637\u0628\u064a\u0639 \u0627\u0644\u062d\u0631\u0648\u0641 \u0627\u0644\u0639\u0631\u0628\u064a\u0629\u060c \u0648\u0625\u0632\u0627\u0644\u0629 \u0627\u0644\u062a\u0634\u0643\u064a\u0644\u060c \u0648\u0645\u0639\u0627\u0644\u062c\u0629 \u0645\u0644\u0641\u0627\u062a PDF \u0648\u0627\u0644\u0640 Word \u0628\u0634\u0643\u0644 \u062c\u0645\u0627\u0639\u064a.",
+          accessReviewsBtn: "\u062f\u062e\u0648\u0644 \u0642\u0627\u0639\u062f\u0629 \u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u0645\u0631\u0627\u062c\u0639\u0627\u062a",
+          accessReviewsDesc: "\u062a\u0635\u0641\u062d \u0633\u062c\u0644\u0627\u062a \u0627\u0644\u0645\u0644\u0641\u0627\u062a \u0627\u0644\u0645\u062d\u0644\u064a\u0629 \u0627\u0644\u0645\u0634\u0641\u0631\u0629\u060c \u0639\u0645\u0644\u064a\u0627\u062a \u062a\u062f\u0642\u064a\u0642 \u0627\u0644\u062a\u0637\u0648\u064a\u0631\u060c \u0648\u062a\u0648\u062b\u064a\u0642 \u0627\u0644\u0646\u0638\u0627\u0645 \u0627\u0644\u0645\u0643\u062a\u0648\u0628 \u0628\u0635\u064a\u063a\u0629 \u0645\u0627\u0631\u0643\u062f\u0627\u0648\u0646.",
+          vaultTitle: "\u062e\u0632\u0646\u0629 \u0627\u0644\u0633\u064a\u0627\u062f\u0629 // \u0627\u0644\u0646\u0648\u0627\u0629 \u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629",
+          diagnosticsTitle: "\u062a\u0634\u062e\u064a\u0635\u064a\u0627\u062a \u0627\u0644\u0646\u0638\u0627\u0645 \u0627\u0644\u0645\u062e\u062a\u0635\u0629",
+          vaultSub: "\u0642\u0648\u0627\u0639\u062f \u0645\u0639\u0627\u0644\u062c\u0629 \u0647\u064a\u0643\u0644\u064a\u0629 \u0622\u0645\u0646\u0629 \u0644\u0646\u0638\u0627\u0645\u060c \u0645\u0644\u0641\u0627\u062a \u062a\u0643\u0648\u064a\u0646 \u0627\u0644\u062d\u0631\u0648\u0641 \u0645\u062a\u0639\u062f\u062f\u0629 \u0627\u0644\u0644\u063a\u0627\u062a\u060c \u0648\u0645\u0639\u0644\u0648\u0645\u0627\u062a \u0627\u0644\u0646\u0638\u0627\u0645.",
+          logsTitle: "\u0633\u062c\u0644\u0627\u062a \u0627\u0644\u0646\u0638\u0627\u0645 // \u0642\u0627\u0639\u062f\u0629 \u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u0645\u0631\u0627\u062c\u0639\u0627\u062a",
+          reviewsSub: "\u0633\u062c\u0644\u0627\u062a \u0627\u0644\u0645\u0631\u0627\u062c\u0639\u0629 \u0627\u0644\u0645\u0634\u0641\u0631\u0629\u060c \u062c\u0627\u0647\u0632\u0629 \u0644\u0644\u062a\u062f\u0642\u064a\u0642 \u0648\u0627\u0644\u062a\u062d\u0644\u064a\u0644 \u0627\u0644\u0639\u0645\u064a\u0642.",
+          logsSearchPlaceholder: "\u062a\u0635\u0641\u064a\u0629 \u0627\u0644\u0633\u062c\u0644\u0627\u062a // \u0623\u062f\u062e\u0644 \u0643\u0644\u0645\u0627\u062a \u0645\u0641\u062a\u0627\u062d\u064a\u0629 \u0644\u0644\u0646\u0638\u0627\u0645...",
+          bazaarTitle: "\u0645\u0635\u0641\u0648\u0641\u0629 \u0627\u0644\u062a\u0633\u0648\u064a\u0642 \u0628\u0627\u0644\u0639\u0645\u0644\u0629",
+          bazaarSub: "\u0645\u062a\u062c\u0631 \u0645\u062e\u0635\u0635 \u0645\u0645\u064a\u0632 \u2014 \u0627\u0644\u0639\u0631\u0648\u0636 \u0627\u0644\u0645\u062d\u062f\u0648\u062f\u0629 \u0628\u0648\u0642\u062a \u062a\u0646\u062a\u0647\u064a \u062a\u0644\u0642\u0627\u0626\u064a\u064b\u0627.",
+          electronicsTitle: "01 // \u0627\u0644\u0625\u0644\u0643\u062a\u0631\u0648\u0646\u064a\u0627\u062a \u0648\u0627\u0644\u062a\u0643\u0646\u0648\u0644\u0648\u062c\u064a\u0627 [\u0645\u0639\u0627\u064a\u064a\u0631 \u0627\u0644\u0623\u062f\u0627\u0621 \u0627\u0644\u0645\u062a\u0642\u062f\u0645\u0629]",
+          homeSectionTitle: "02 // \u0627\u0644\u0645\u0646\u0632\u0644 \u0648\u0627\u0644\u0645\u0637\u0628\u062e [\u0623\u062f\u0644\u0629 \u0627\u0644\u0634\u0631\u0627\u0621 \u0648\u0625\u0639\u062f\u0627\u062f\u0627\u062a \u0627\u0644\u062a\u0635\u0645\u064a\u0645]",
+          fashionTitle: "03 // \u0627\u0644\u0623\u0632\u064a\u0627\u0621 \u0648\u0627\u0644\u0625\u0643\u0633\u0633\u0648\u0627\u0631\u0627\u062a [\u062a\u0648\u0635\u064a\u0627\u062a \u0627\u0644\u0623\u0646\u0627\u0642\u0629 \u0627\u0644\u0639\u0635\u0631\u064a\u0629]",
+          healthTitle: "04 // \u0627\u0644\u0635\u062d\u0629 \u0648\u0627\u0644\u0639\u0646\u0627\u064a\u0629 \u0627\u0644\u0634\u062e\u0635\u064a\u0629 [\u0627\u0644\u0631\u0648\u062a\u064a\u0646 \u0627\u0644\u064a\u0648\u0645\u064a \u0627\u0644\u0645\u062a\u0642\u062f\u0645]",
+          comparerTitle: "\u0645\u0642\u0627\u0631\u0646\u0629 \u0623\u0641\u0636\u0644 \u0627\u0644\u0645\u0646\u062a\u062c\u0627\u062a",
+          comparerDesc: "\u0627\u062e\u062a\u0631 \u0645\u0627 \u064a\u0635\u0644 \u0625\u0644\u0649 \u062b\u0644\u0627\u062b\u0629 \u0645\u0646\u062a\u062c\u0627\u062a \u0644\u0645\u0642\u0627\u0631\u0646\u0649 \u0627\u0644\u0623\u0633\u0639\u0627\u0631 \u0648\u0627\u0644\u062a\u0635\u0646\u064a\u0641\u0627\u062a \u0648\u062a\u0641\u0627\u0635\u064a\u0644 \u0627\u0644\u0645\u064a\u0632\u0627\u062a \u0641\u064a \u0639\u0631\u0636 \u062c\u0627\u0646\u0628\u064a \u0648\u0627\u062d\u062f.",
+          visitAffiliate: "\u0632\u064a\u0627\u0631\u0629 \u0631\u0627\u0628\u0637 \u0627\u0644\u0623\u0641\u0644\u064a\u064a\u062a",
+          aiAssistantTitle: "\u0645\u0633\u0627\u0639\u062f \u0627\u0644\u0645\u0642\u0627\u0644\u0627\u062a \u0628\u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064a",
+          aiAssistantDesc: "\u0623\u0646\u0634\u0626 \u0645\u0644\u062e\u0635 \u0645\u0646\u062a\u062c \u0623\u0648 \u0645\u0642\u0627\u0644 \u062a\u0631\u0648\u064a\u062c\u064a \u0639\u0644\u0649 \u0627\u0644\u0641\u0648\u0631 \u0628\u0627\u0633\u062a\u062e\u062f\u0627\u0645 \u0648\u0635\u0641 \u064a\u0646\u0627\u0633\u0628 \u0645\u062a\u062c\u0631 \u0627\u0644\u062a\u0633\u0648\u064a\u0642 \u0628\u0627\u0644\u0639\u0645\u0644\u0629.",
+          aiPromptLabel: "\u0635\u0641 \u0627\u0644\u0645\u062d\u062a\u0648\u0649 \u0627\u0644\u062a\u064a \u062a\u0631\u064a\u062f\u0647\u0627",
+          aiPromptPlaceholder: "\u0627\u0646\u0634\u0623 \u0645\u0642\u0627\u0644 \u0625\u0637\u0644\u0627\u0642 \u0645\u0646\u062a\u062c \u0644\u0645\u0646\u0635\u0629 \u062a\u0642\u0646\u064a\u0629 \u0628\u0631\u0645\u062c\u064a\u0629",
+          aiGenerateBtn: "\u062a\u0648\u0644\u064a\u062f \u0645\u0642\u0627\u0644 \u0628\u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064a",
+          aiEmptyState: "\u0627\u0643\u062a\u0628 \u0639\u0646\u062f\u0627\u0621 \u0627\u0644\u062a\u0648\u0644\u064a\u062f \u0644\u0625\u0646\u0634\u0627\u0621 \u062e\u0627\u0631\u0637\u0629 \u0645\u0644\u062e\u0635 \u0645\u0646\u062a\u062c.",
+          unlockBtn: "\u0641\u0643 \u0627\u0644\u062e\u0632\u0646\u0629",
+          lockedMessage: "\u0623\u062f\u062e\u0644 \u0643\u0644\u0645\u0629 \u0633\u0631 \u0627\u0644\u062e\u0632\u0646\u0629 \u0644\u0644\u062f\u062e\u0648\u0644 \u0625\u0644\u0649 \u0648\u0627\u062c\u0647\u0629 \u0627\u0644\u0625\u062f\u0627\u0631\u0629.",
+          manageTitle: "\u0625\u062f\u0627\u0631\u0629 \u0627\u0644\u0645\u0646\u062a\u062c\u0627\u062a \u0648\u0627\u0644\u0631\u0648\u0627\u0628\u0637 \u0627\u0644\u062a\u0627\u0628\u0639\u0629",
+          manageSub: "\u0625\u062f\u0627\u0631\u0629 \u0627\u0644\u0645\u0646\u062a\u062c\u0627\u062a \u0648\u0627\u0644\u0631\u0648\u0627\u0628\u0637 \u0627\u0644\u062a\u0627\u0628\u0639\u0629 \u0648\u0627\u0644\u0623\u0633\u0639\u0627\u0631 \u0645\u0646 \u062e\u0644\u0627\u0644 \u0648\u0627\u062c\u0647\u0629 \u0627\u0644\u062e\u0632\u0646\u0629 \u0627\u0644\u0622\u0645\u0646\u0629.",
+          manageProducts: "\u0625\u062f\u0627\u0631\u0629 \u0627\u0644\u0645\u0646\u062a\u062c\u0627\u062a",
+          addProduct: "+ \u0625\u0636\u0627\u0641\u0629 \u0645\u0646\u062a\u062c",
+          productName: "\u0627\u0633\u0645 \u0627\u0644\u0645\u0646\u062a\u062c",
+          productCategory: "\u0627\u0644\u062a\u0635\u0646\u064a\u0641",
+          productPrice: "\u0627\u0644\u0633\u0639\u0631",
+          productOldPrice: "\u0627\u0644\u0633\u0639\u0631 \u0627\u0644\u0642\u062f\u064a\u0645",
+          productDescription: "\u0627\u0644\u0648\u0635\u0641",
+          productAffiliateLink: "\u0631\u0627\u0628\u0637 \u0627\u0644\u062a\u0633\u0648\u064a\u0642",
+          saveChanges: "\u062d\u0641\u0638 \u0627\u0644\u062a\u063a\u064a\u064a\u0631\u0627\u062a",
+          cancel: "\u0625\u0644\u063a\u0627\u0621",
+          passwordPlaceholder: "\u0623\u062f\u062e\u0644 \u0643\u0644\u0645\u0629 \u0645\u0631\u0648\u0631 \u0627\u0644\u062e\u0632\u0646\u0629...",
+          offerEnds: "\u064a\u0646\u062a\u0647\u064a \u0627\u0644\u0639\u0631\u0636 \u062e\u0644\u0627\u0644:",
+          limitedLog: "\u0633\u062c\u0644 \u0645\u062d\u062f\u0648\u062f:"
+        }
+      };
+
+      var STORAGE_KEY = 'mahutop-lang';
+
+      function getCurrentLang() {
+        return localStorage.getItem(STORAGE_KEY) || 'en';
+      }
+
+      function applyTranslations(lang) {
+        var dict = translations[lang] || translations.en;
+
+        // Translate text content
+        document.querySelectorAll('[data-i18n-key]').forEach(function(el) {
+          var key = el.getAttribute('data-i18n-key');
+          if (key && dict[key]) {
+            el.textContent = dict[key];
+          }
+        });
+
+        // Translate placeholders
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
+          var key = el.getAttribute('data-i18n-placeholder');
+          if (key && dict[key]) {
+            el.placeholder = dict[key];
+          }
+        });
+      }
+
+      function setLang(lang) {
+        localStorage.setItem(STORAGE_KEY, lang);
+        document.documentElement.lang = lang;
+        document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+        if (lang === 'ar') {
+          document.documentElement.classList.add('lang-ar');
+        } else {
+          document.documentElement.classList.remove('lang-ar');
+        }
+        applyTranslations(lang);
+        updateSwitcherUI(lang);
+      }
+
+      function updateSwitcherUI(lang) {
+        document.querySelectorAll('.lang-btn').forEach(function(btn) {
+          if (btn.getAttribute('data-lang') === lang) {
+            btn.classList.add('active');
+          } else {
+            btn.classList.remove('active');
+          }
+        });
+      }
+
+      // Initialize
+      var currentLang = getCurrentLang();
+      applyTranslations(currentLang);
+      updateSwitcherUI(currentLang);
+
+      // Bind switcher buttons
+      document.querySelectorAll('.lang-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var lang = btn.getAttribute('data-lang');
+          if (lang) setLang(lang);
+        });
+      });
+
+      // Cross-tab sync
+      window.addEventListener('storage', function(e) {
+        if (e.key === STORAGE_KEY && e.newValue) {
+          applyTranslations(e.newValue);
+          updateSwitcherUI(e.newValue);
+          document.documentElement.lang = e.newValue;
+          document.documentElement.dir = e.newValue === 'ar' ? 'rtl' : 'ltr';
+          if (e.newValue === 'ar') {
+            document.documentElement.classList.add('lang-ar');
+          } else {
+            document.documentElement.classList.remove('lang-ar');
+          }
+        }
+      });
+    })();
+    </script> </body> </html>  <script type="module">const r=document.getElementById("ai-prompt"),i=document.getElementById("ai-generate"),a=document.getElementById("ai-output"),o=()=>localStorage.getItem("mahutop-lang")==="ar"?"ar":"en",c={en:"Please enter a prompt to generate a compelling product article summary.",ar:"يرجى إدخال وصف لتوليد ملخص مقال تسويقي جذاب للمنتج."},s={en:e=>`Product Article Preview:
 
 ${e} is positioned as a market-leading affiliate story that emphasizes premium quality, conversion-ready messaging, and a strong purchase rationale. This content highlights benefits, performance, and lifestyle appeal while keeping links and action clear for high-value buyers.
 

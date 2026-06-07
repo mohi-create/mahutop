@@ -1,0 +1,673 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { products, recommendations } from '../data/products';
+---
+
+<Layout title="Grand Bazaar | MahuTop">
+  <main class="bazaar-shell">
+    <!-- Header -->
+    <header class="bazaar-header">
+      <h1 data-i18n-key="bazaarTitle">AFFILIATE MATRIX</h1>
+      <p class="bazaar-sub" data-i18n-key="bazaarSub">Curated premium storefront — time-limited offers auto-expire.</p>
+    </header>
+
+    <!-- Product Comparator -->
+    <section class="comparer-section">
+      <h2 data-i18n-key="comparerTitle">Compare Top Products</h2>
+      <p class="section-desc" data-i18n-key="comparerDesc">Select up to three products to compare pricing, categories, and feature details in a single side-by-side view.</p>
+      <div class="compare-selectors">
+        {products.map((p, i) => (
+          <label class="compare-check">
+            <input type="checkbox" class="compare-cb" data-product-id={p.id} />
+            <span>{p.name}</span>
+          </label>
+        ))}
+      </div>
+      <div id="compare-table" class="compare-table"></div>
+    </section>
+
+    <!-- Category: Electronics -->
+    <section class="bazaar-section">
+      <h2 class="section-title" data-i18n-key="electronicsTitle">01 // ELECTRONICS & TECHNOLOGY [PERFORMANCE BENCHMARKS]</h2>
+      <div class="products-grid">
+        {products.filter(p => p.category === 'Electronics').map(product => (
+          <article class="product-card" data-product-id={product.id}>
+            <div class="card-header">
+              <span class="card-category">{product.category}</span>
+              {product.priceOld && (
+                <span class="card-badge">
+                  <span data-i18n-key="offerEnds">OFFER ENDS:</span> 24h
+                </span>
+              )}
+            </div>
+            <h3 class="card-name">{product.name}</h3>
+            <p class="card-desc">{product.description}</p>
+            {product.specs && (
+              <div class="card-specs">
+                {product.specs.map(spec => (
+                  <div class="spec-row">
+                    <span class="spec-label">{spec.label}</span>
+                    <span class="spec-value">{spec.value}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div class="card-pricing">
+              <span class="price-new">{product.priceNew}</span>
+              {product.priceOld && <span class="price-old">{product.priceOld}</span>}
+            </div>
+            <a href={product.affiliateLink} target="_blank" rel="noopener noreferrer" class="affiliate-btn" data-i18n-key="visitAffiliate">Visit Affiliate</a>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- Category: Home -->
+    <section class="bazaar-section">
+      <h2 class="section-title" data-i18n-key="homeSectionTitle">02 // HOME & KITCHEN [BUYING GUIDES & SETUPS]</h2>
+      <div class="products-grid">
+        {products.filter(p => p.category === 'Home').map(product => (
+          <article class="product-card" data-product-id={product.id}>
+            <div class="card-header">
+              <span class="card-category">{product.category}</span>
+              {product.priceOld && (
+                <span class="card-badge">
+                  <span data-i18n-key="offerEnds">OFFER ENDS:</span> 24h
+                </span>
+              )}
+            </div>
+            <h3 class="card-name">{product.name}</h3>
+            <p class="card-desc">{product.description}</p>
+            {product.specs && (
+              <div class="card-specs">
+                {product.specs.map(spec => (
+                  <div class="spec-row">
+                    <span class="spec-label">{spec.label}</span>
+                    <span class="spec-value">{spec.value}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div class="card-pricing">
+              <span class="price-new">{product.priceNew}</span>
+              {product.priceOld && <span class="price-old">{product.priceOld}</span>}
+            </div>
+            <a href={product.affiliateLink} target="_blank" rel="noopener noreferrer" class="affiliate-btn" data-i18n-key="visitAffiliate">Visit Affiliate</a>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- Category: Fashion -->
+    <section class="bazaar-section">
+      <h2 class="section-title" data-i18n-key="fashionTitle">03 // FASHION & ACCESSORIES [STYLE RECOMMENDATIONS]</h2>
+      <div class="products-grid">
+        {products.filter(p => p.category === 'Fashion').map(product => (
+          <article class="product-card" data-product-id={product.id}>
+            <div class="card-header">
+              <span class="card-category">{product.category}</span>
+              {product.priceOld && (
+                <span class="card-badge">
+                  <span data-i18n-key="offerEnds">OFFER ENDS:</span> 24h
+                </span>
+              )}
+            </div>
+            <h3 class="card-name">{product.name}</h3>
+            <p class="card-desc">{product.description}</p>
+            {product.specs && (
+              <div class="card-specs">
+                {product.specs.map(spec => (
+                  <div class="spec-row">
+                    <span class="spec-label">{spec.label}</span>
+                    <span class="spec-value">{spec.value}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div class="card-pricing">
+              <span class="price-new">{product.priceNew}</span>
+              {product.priceOld && <span class="price-old">{product.priceOld}</span>}
+            </div>
+            <a href={product.affiliateLink} target="_blank" rel="noopener noreferrer" class="affiliate-btn" data-i18n-key="visitAffiliate">Visit Affiliate</a>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- Category: Health -->
+    <section class="bazaar-section">
+      <h2 class="section-title" data-i18n-key="healthTitle">04 // HEALTH & PERSONAL CARE [EXPERT ROUTINES]</h2>
+      <div class="products-grid">
+        {products.filter(p => p.category === 'Health').map(product => (
+          <article class="product-card" data-product-id={product.id}>
+            <div class="card-header">
+              <span class="card-category">{product.category}</span>
+              {product.priceOld && (
+                <span class="card-badge">
+                  <span data-i18n-key="offerEnds">OFFER ENDS:</span> 24h
+                </span>
+              )}
+            </div>
+            <h3 class="card-name">{product.name}</h3>
+            <p class="card-desc">{product.description}</p>
+            {product.specs && (
+              <div class="card-specs">
+                {product.specs.map(spec => (
+                  <div class="spec-row">
+                    <span class="spec-label">{spec.label}</span>
+                    <span class="spec-value">{spec.value}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div class="card-pricing">
+              <span class="price-new">{product.priceNew}</span>
+              {product.priceOld && <span class="price-old">{product.priceOld}</span>}
+            </div>
+            <a href={product.affiliateLink} target="_blank" rel="noopener noreferrer" class="affiliate-btn" data-i18n-key="visitAffiliate">Visit Affiliate</a>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- AI Article Assistant -->
+    <section class="ai-assistant-section">
+      <h2 data-i18n-key="aiAssistantTitle">AI Article Assistant</h2>
+      <p class="section-desc" data-i18n-key="aiAssistantDesc">Draft a product summary or promotional article instantly using a prompt that fits your affiliate storefront.</p>
+      <div class="ai-form">
+        <label for="ai-prompt" data-i18n-key="aiPromptLabel">Describe the content you want</label>
+        <textarea id="ai-prompt" rows="3" data-i18n-placeholder="aiPromptPlaceholder" placeholder="Create a product launch article for a premium tech rig"></textarea>
+        <button id="ai-generate-btn" class="ai-btn" data-i18n-key="aiGenerateBtn">Generate AI Article</button>
+      </div>
+      <div id="ai-output" class="ai-output">
+        <p class="ai-empty" data-i18n-key="aiEmptyState">Type a prompt and click Generate to create a product article summary.</p>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<script>
+// @ts-nocheck
+(function() {
+  var allProducts = [
+    { id: 'p1', name: 'Pro Compute Core Rig', category: 'Electronics', priceOld: '$1,499', priceNew: '$1,299', description: 'Benchmark: Optimized for local Dolphin3 and LLM execution.', specs: [{ label: 'CPU', value: '16-core Zen 5' }, { label: 'RAM', value: '64GB DDR5' }, { label: 'Storage', value: '2TB NVMe SSD' }] },
+    { id: 'p2', name: 'Ergonomic Workspace Command Desk', category: 'Home', priceNew: '$349', description: 'Setup: Perfect minimalist cable-managed layout.', specs: [{ label: 'Material', value: 'Solid oak composite' }, { label: 'Adjustable', value: 'Standing desk mode' }, { label: 'Extras', value: 'RGB ambient trim' }] },
+    { id: 'p3', name: 'Tactical Cyber-Shell Parka', category: 'Fashion', priceOld: '$180', priceNew: '$120', description: 'Style: Matte-black weatherized utility outer shell.', specs: [{ label: 'Shell', value: 'Waterproof ripstop' }, { label: 'Lining', value: 'Thermal insulating mesh' }, { label: 'Storage', value: '7 secure pockets' }] },
+    { id: 'p4', name: 'Smart Nootropic Focus Stacks', category: 'Health', priceNew: '$45', description: 'Routine: Morning execution matrix for deep focus work.', specs: [{ label: 'Form', value: 'Capsule bundle' }, { label: 'Support', value: 'Cognitive clarity and calm' }, { label: 'Cycle', value: '30-day regimen' }] }
+  ];
+
+  // Product Comparator
+  var compareCbs = document.querySelectorAll('.compare-cb');
+  var compareTable = document.getElementById('compare-table');
+
+  function updateCompare() {
+    var checked = [];
+    compareCbs.forEach(function(cb) {
+      if (cb.checked) checked.push(cb.getAttribute('data-product-id'));
+    });
+
+    if (checked.length < 2) {
+      compareTable.innerHTML = '';
+      return;
+    }
+
+    var selected = checked.map(function(id) {
+      return allProducts.find(function(p) { return p.id === id; });
+    }).filter(Boolean);
+
+    var html = '<table class="compare-grid">';
+    html += '<thead><tr><th></th>';
+    selected.forEach(function(p) { html += '<th>' + escapeHtml(p.name) + '</th>'; });
+    html += '</tr></thead><tbody>';
+    html += '<tr><td>Category</td>';
+    selected.forEach(function(p) { html += '<td>' + escapeHtml(p.category) + '</td>'; });
+    html += '</tr>';
+    html += '<tr><td>Price</td>';
+    selected.forEach(function(p) { html += '<td class="compare-price">' + escapeHtml(p.priceNew) + (p.priceOld ? ' <span class="old-price">' + escapeHtml(p.priceOld) + '</span>' : '') + '</td>'; });
+    html += '</tr>';
+
+    // Specs
+    var maxSpecs = Math.max.apply(null, selected.map(function(p) { return p.specs ? p.specs.length : 0; }));
+    for (var i = 0; i < maxSpecs; i++) {
+      html += '<tr><td>Spec ' + (i + 1) + '</td>';
+      selected.forEach(function(p) {
+        var spec = p.specs && p.specs[i];
+        html += '<td>' + (spec ? escapeHtml(spec.label) + ': ' + escapeHtml(spec.value) : '—') + '</td>';
+      });
+      html += '</tr>';
+    }
+    html += '</tbody></table>';
+    compareTable.innerHTML = html;
+  }
+
+  compareCbs.forEach(function(cb) {
+    cb.addEventListener('change', updateCompare);
+  });
+
+  // AI Article Generator
+  var aiBtn = document.getElementById('ai-generate-btn');
+  var aiOutput = document.getElementById('ai-output');
+  var aiPrompt = document.getElementById('ai-prompt');
+
+  if (aiBtn && aiOutput && aiPrompt) {
+    aiBtn.addEventListener('click', function() {
+      var prompt = (aiPrompt.value || '').trim();
+      if (!prompt) return;
+
+      aiBtn.textContent = 'Generating...';
+      aiBtn.disabled = true;
+
+      setTimeout(function() {
+        var article = generateArticle(prompt);
+        aiOutput.innerHTML = '<div class="ai-article">' + article + '</div>';
+        aiBtn.textContent = 'Generate AI Article';
+        aiBtn.disabled = false;
+      }, 800);
+    });
+  }
+
+  function generateArticle(prompt) {
+    var matchingProducts = allProducts.filter(function(p) {
+      var words = prompt.toLowerCase().split(/\s+/);
+      return words.some(function(w) {
+        return w.length > 3 && (
+          p.name.toLowerCase().includes(w) ||
+          p.category.toLowerCase().includes(w) ||
+          p.description.toLowerCase().includes(w)
+        );
+      });
+    });
+
+    if (matchingProducts.length === 0) matchingProducts = allProducts;
+
+    var html = '<h3>AI-Generated Product Article</h3>';
+    html += '<p class="article-intro">Based on your prompt: "' + escapeHtml(prompt) + '"</p>';
+    html += '<div class="article-products">';
+
+    matchingProducts.forEach(function(p) {
+      html += '<div class="article-product">';
+      html += '<h4>' + escapeHtml(p.name) + '</h4>';
+      html += '<p>' + escapeHtml(p.description) + '</p>';
+      html += '<span class="article-price">' + escapeHtml(p.priceNew) + '</span>';
+      if (p.specs) {
+        html += '<ul>';
+        p.specs.forEach(function(s) { html += '<li><strong>' + escapeHtml(s.label) + ':</strong> ' + escapeHtml(s.value) + '</li>'; });
+        html += '</ul>';
+      }
+      html += '</div>';
+    });
+
+    html += '</div>';
+    return html;
+  }
+
+  function escapeHtml(text) {
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode(String(text || '')));
+    return div.innerHTML;
+  }
+})();
+</script>
+
+<style>
+  .bazaar-shell {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    padding: 0 0 3rem;
+  }
+
+  /* Header */
+  .bazaar-header {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .bazaar-header h1 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #38bdf8;
+    margin: 0;
+  }
+  .bazaar-sub {
+    color: #94a3b8;
+    font-size: 1rem;
+    margin: 0;
+  }
+
+  /* Sections */
+  .bazaar-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  .section-title {
+    font-size: 1rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #64748b;
+    border-bottom: 1px solid rgba(100, 116, 139, 0.2);
+    padding-bottom: 0.75rem;
+    margin: 0;
+  }
+  .section-desc {
+    color: #94a3b8;
+    font-size: 0.95rem;
+    margin: 0;
+    max-width: 700px;
+  }
+
+  /* Product Grid */
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .product-card {
+    background: rgba(9, 12, 18, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+  }
+  .product-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(56, 189, 248, 0.3);
+    box-shadow: 0 12px 40px rgba(56, 189, 248, 0.08);
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .card-category {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    color: #64748b;
+    text-transform: uppercase;
+  }
+  .card-badge {
+    font-size: 0.7rem;
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    letter-spacing: 0.05em;
+  }
+
+  .card-name {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #e6eef6;
+    margin: 0;
+    letter-spacing: 0.03em;
+  }
+  .card-desc {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .card-specs {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0.5rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .spec-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.82rem;
+  }
+  .spec-label { color: #64748b; }
+  .spec-value { color: #cbd5e1; }
+
+  .card-pricing {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    margin-top: 0.25rem;
+  }
+  .price-new {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #38bdf8;
+  }
+  .price-old {
+    font-size: 0.9rem;
+    color: #64748b;
+    text-decoration: line-through;
+  }
+
+  .affiliate-btn {
+    display: inline-block;
+    text-align: center;
+    padding: 0.7rem 1.2rem;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #38bdf8, #0ea5e9);
+    color: #030712;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin-top: 0.5rem;
+  }
+  .affiliate-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 25px rgba(56, 189, 248, 0.25);
+  }
+
+  /* Compare */
+  .comparer-section {
+    background: rgba(9, 12, 18, 0.9);
+    border: 1px solid rgba(56, 189, 248, 0.12);
+    border-radius: 14px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .comparer-section h2 {
+    margin: 0;
+    font-size: 1.2rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #e6eef6;
+  }
+
+  .compare-selectors {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .compare-check {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: #94a3b8;
+    cursor: pointer;
+  }
+  .compare-check input[type="checkbox"] {
+    accent-color: #38bdf8;
+  }
+
+  .compare-table {
+    overflow-x: auto;
+  }
+  .compare-grid {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+  .compare-grid th,
+  .compare-grid td {
+    padding: 0.6rem 0.8rem;
+    border: 1px solid rgba(100, 116, 139, 0.2);
+    text-align: left;
+    color: #cbd5e1;
+  }
+  .compare-grid th {
+    background: rgba(56, 189, 248, 0.08);
+    color: #38bdf8;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+  .compare-price {
+    font-weight: 700;
+    color: #38bdf8;
+  }
+  .old-price {
+    text-decoration: line-through;
+    color: #64748b;
+    font-weight: 400;
+  }
+
+  /* AI Assistant */
+  .ai-assistant-section {
+    background: rgba(9, 12, 18, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .ai-assistant-section h2 {
+    margin: 0;
+    font-size: 1.2rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #e6eef6;
+  }
+
+  .ai-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .ai-form label {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    letter-spacing: 0.05em;
+  }
+  .ai-form textarea {
+    background: #0d1117;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 10px;
+    color: #f8fafc;
+    padding: 0.85rem 1rem;
+    font-family: inherit;
+    font-size: 0.9rem;
+    outline: none;
+    resize: vertical;
+    transition: border-color 0.2s;
+  }
+  .ai-form textarea:focus {
+    border-color: #58a6ff;
+  }
+
+  .ai-btn {
+    align-self: flex-start;
+    padding: 0.7rem 1.5rem;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #38bdf8, #0ea5e9);
+    color: #030712;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .ai-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 25px rgba(56, 189, 248, 0.25);
+  }
+  .ai-btn:disabled {
+    opacity: 0.6;
+    cursor: wait;
+  }
+
+  .ai-output {
+    min-height: 60px;
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(100, 116, 139, 0.15);
+    border-radius: 10px;
+    padding: 1.25rem;
+  }
+  .ai-empty {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin: 0;
+  }
+  .ai-article h3 {
+    color: #38bdf8;
+    font-size: 1rem;
+    letter-spacing: 0.08em;
+    margin: 0 0 0.5rem;
+  }
+  .article-intro {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    margin: 0 0 1rem;
+    font-style: italic;
+  }
+  .article-products {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .article-product {
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    padding: 1rem;
+    background: rgba(9, 12, 18, 0.6);
+  }
+  .article-product h4 {
+    margin: 0 0 0.35rem;
+    color: #e6eef6;
+    font-size: 0.95rem;
+  }
+  .article-product p {
+    margin: 0 0 0.5rem;
+    color: #94a3b8;
+    font-size: 0.85rem;
+  }
+  .article-price {
+    color: #38bdf8;
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+  .article-product ul {
+    margin: 0.5rem 0 0;
+    padding-left: 1.2rem;
+    list-style: disc;
+  }
+  .article-product li {
+    font-size: 0.82rem;
+    color: #cbd5e1;
+    margin-bottom: 0.2rem;
+  }
+
+  @media (max-width: 640px) {
+    .products-grid {
+      grid-template-columns: 1fr;
+    }
+    .compare-selectors {
+      flex-direction: column;
+    }
+  }
+</style>
